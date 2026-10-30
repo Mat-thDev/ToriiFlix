@@ -1,0 +1,25 @@
+@plugin "daisyui/theme" {
+  name: "torii-ink";
+  prefersdark: true;
+  color-scheme: "dark";
+  /* OLED puro - preto absoluto HBO Max */
+  --color-base-100: oklch(7% 0.005 285);
+  --color-base-200: oklch(11% 0.006 285);
+  --color-base-300: oklch(16% 0.008 285);
+  --color-base-content: oklch(98% 0 0);
+  --color-primary: oklch(65% 0.24 280);
+  --color-primary-content: oklch(98% 0 0);
+  --color-secondary: oklch(50% 0.18 320);
+  --color-accent: oklch(72% 0.20 70);
+  --color-neutral: oklch(18% 0.006 285);
+  --color-info: oklch(72% 0.14 230);
+  --color-success: oklch(69% 0.16 150);
+  --color-warning: oklch(80% 0.16 80);
+  --color-error: oklch(64% 0.22 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

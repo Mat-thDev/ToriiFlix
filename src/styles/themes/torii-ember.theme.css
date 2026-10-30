@@ -1,0 +1,25 @@
+@plugin "daisyui/theme" {
+  name: "torii-ember";
+  prefersdark: true;
+  color-scheme: "dark";
+  /* Crunchyroll - laranja queimado + grafite quente */
+  --color-base-100: oklch(13% 0.015 35);
+  --color-base-200: oklch(17% 0.016 35);
+  --color-base-300: oklch(23% 0.018 35);
+  --color-base-content: oklch(97% 0.005 35);
+  --color-primary: oklch(70% 0.21 42);
+  --color-primary-content: oklch(15% 0.03 42);
+  --color-secondary: oklch(60% 0.20 290);
+  --color-accent: oklch(78% 0.15 75);
+  --color-neutral: oklch(22% 0.012 35);
+  --color-info: oklch(68% 0.14 240);
+  --color-success: oklch(70% 0.18 145);
+  --color-warning: oklch(85% 0.18 85);
+  --color-error: oklch(60% 0.20 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

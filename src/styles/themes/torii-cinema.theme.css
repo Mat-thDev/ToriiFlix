@@ -1,0 +1,29 @@
+@plugin "daisyui/theme" {
+  name: "torii-cinema";
+  prefersdark: true;
+  color-scheme: "dark";
+  /* Netflix/HBO true black base - mais profundo que torii para contraste cinemático */
+  --color-base-100: oklch(12% 0.008 285);
+  --color-base-200: oklch(16% 0.009 285);
+  --color-base-300: oklch(21% 0.011 285);
+  --color-base-content: oklch(98% 0.002 285);
+  /* Vermelho cinematográfico - Netflix */
+  --color-primary: oklch(62% 0.25 25);
+  --color-primary-content: oklch(98% 0 0);
+  --color-secondary: oklch(55% 0.22 292);
+  --color-secondary-content: oklch(98% 0 0);
+  --color-accent: oklch(75% 0.17 65);
+  --color-accent-content: oklch(15% 0.02 65);
+  --color-neutral: oklch(25% 0.01 285);
+  --color-neutral-content: oklch(96% 0.002 285);
+  --color-info: oklch(70% 0.15 230);
+  --color-success: oklch(68% 0.17 145);
+  --color-warning: oklch(82% 0.16 85);
+  --color-error: oklch(62% 0.22 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
