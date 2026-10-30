@@ -8,12 +8,14 @@ import { SettingsRow } from "../../../ui/SettingsRow";
 import { Toggle } from "../../../ui/Toggle";
 import { Input } from "../../../ui/Input";
 import { FocusButton } from "../../../ui/FocusButton";
+import useSettings from "../../../../hooks/useSettings";
 
 type Feedback = { kind: "success" | "error"; text: string } | null;
 
 /** Aba Addons — built-ins (somente leitura) + externos via useAddons. */
 const AddonsTab = () => {
   const { addons, add, remove, setEnabled } = useAddons();
+  const { settings, changeSetting } = useSettings();
   const [manifestUrl, setManifestUrl] = useState("");
   const [installing, setInstalling] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -118,6 +120,34 @@ const AddonsTab = () => {
                 <Package className="size-4" aria-hidden="true" />
                 {installing ? "Instalando…" : "Instalar"}
               </FocusButton>
+            </div>
+          }
+        />
+
+        {feedback && (
+          <p
+            role={feedback.kind === "error" ? "alert" : "status"}
+            className={feedback.kind === "error" ? "py-3 text-sm text-error" : "py-3 text-sm text-success"}
+          >
+            {feedback.text}
+          </p>
+        )}
+      </SettingsGroup>
+
+      <SettingsGroup title="TMDB">
+        <SettingsRow
+          title="Chave API"
+          description="Utilizada para buscar informações mais completas em diversos idiomas."
+          control={
+            <div className="flex w-full max-w-md items-center gap-2">
+              <Input
+                aria-label="API Key"
+                value={settings.addons.tmdbApiKey}
+                placeholder="92md81nz81w"
+                disabled={false}
+                onChange={(e) => changeSetting("addons", { tmdbApiKey: e.currentTarget.value })}
+                className="rounded-lg border border-base-content/15 bg-base-content/5 px-3 py-2 text-sm placeholder:text-base-content/40"
+              />
             </div>
           }
         />

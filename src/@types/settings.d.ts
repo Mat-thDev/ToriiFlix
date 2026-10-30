@@ -37,11 +37,16 @@ declare namespace AppSettings {
     startWithSystem: boolean;
   }
 
+  interface Addons {
+    tmdbApiKey?: string
+  }
+
   /** Raiz das configurações — cada seção é um subgroupo persistido. */
   interface Settings {
     playback: Playback;
     appearance: Appearance;
     system: System;
+    addons: Addons
   }
 
   /** Nome de uma seção (chave da raiz). */

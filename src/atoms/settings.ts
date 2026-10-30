@@ -18,6 +18,9 @@ export const DEFAULT_SETTINGS: AppSettings.Settings = {
         language: "pt-BR",
         startWithSystem: false,
     },
+    addons: {
+        tmdbApiKey: ""
+    }
 };
 
 /**
@@ -36,6 +39,7 @@ export const settingsAtom = atomWithStorage<AppSettings.Settings>("settings", DE
                 playback: { ...DEFAULT_SETTINGS.playback, ...saved.playback },
                 appearance: { ...DEFAULT_SETTINGS.appearance, ...saved.appearance },
                 system: { ...DEFAULT_SETTINGS.system, ...saved.system },
+                addons: { ...DEFAULT_SETTINGS.addons, ...saved.addons }
             };
         } catch {
             return DEFAULT_SETTINGS;
