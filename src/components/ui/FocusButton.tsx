@@ -4,8 +4,15 @@ import { useFocusable } from "@noriginmedia/norigin-spatial-navigation-react";
  * Botão focável — primitivo de ação do app (navegação espacial remote/setas).
  * Enter dispara o clique nativo; o foco rola o elemento só o necessário.
  */
-export const FocusButton = ({ children, className, onClick, buttonRef, ...rest }: UI.FocusButtonProps) => {
-  const { ref, focused } = useFocusable<HTMLButtonElement>({
+export const FocusButton = ({
+  children,
+  className,
+  onClick,
+  onFocus,
+  buttonRef,
+  ...rest
+}: UI.FocusButtonProps) => {
+  const { ref, focused, focusSelf } = useFocusable<HTMLButtonElement>({
     onEnterPress: () => ref.current?.click(),
     onFocus: ({ node }) => node?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }),
   });
@@ -19,6 +26,12 @@ export const FocusButton = ({ children, className, onClick, buttonRef, ...rest }
       className={className}
       data-focused={focused || undefined}
       onClick={onClick}
+      onFocus={(event) => {
+        // Clique/Tab só move o foco DOM; sincroniza o norigin para as setas
+        // partirem daqui. setFocus no próprio nó não re-dispara focus (sem loop).
+        focusSelf();
+        onFocus?.(event);
+      }}
       {...rest}
     >
       {children}

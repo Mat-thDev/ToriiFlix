@@ -6,6 +6,7 @@ import "swiper/css";
 import useCatalog from "../../hooks/useCatalog";
 import MediaCard, { POSTER_WIDTH } from "./MediaCard";
 import { ErrorAlert } from "./ErrorAlert";
+import { FocusButton } from "./FocusButton";
 import { PosterSkeleton } from "../skeletons/PosterSkeleton";
 
 const SKELETON_COUNT = 8;
@@ -149,27 +150,30 @@ const MediaSection = ({
             className={
               fits
                 ? "hidden"
-                : "flex gap-2 opacity-0 transition-opacity duration-200 group-hover/section:opacity-100 focus-within:opacity-100"
+                : "flex gap-2 opacity-0 transition-opacity duration-200 group-hover/section:opacity-100 group-focus-within/section:opacity-100"
             }
           >
-            <button
-              type="button"
-              aria-label="Conteúdo anterior"
-              disabled={atStart}
-              onClick={() => swiperRef.current?.slidePrev()}
-              className="btn btn-circle btn-sm btn-outline"
-            >
-              <ChevronLeft className="size-4" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              aria-label="Próximo conteúdo"
-              disabled={atEnd}
-              onClick={() => swiperRef.current?.slideNext()}
-              className="btn btn-circle btn-sm btn-outline"
-            >
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
+            {/* Só renderiza a direção utilizável: sem botão morto para o remote */}
+            {!atStart && (
+              <FocusButton
+                type="button"
+                aria-label="Conteúdo anterior"
+                onClick={() => swiperRef.current?.slidePrev()}
+                className="btn btn-circle btn-sm btn-outline"
+              >
+                <ChevronLeft className="size-4" aria-hidden="true" />
+              </FocusButton>
+            )}
+            {!atEnd && (
+              <FocusButton
+                type="button"
+                aria-label="Próximo conteúdo"
+                onClick={() => swiperRef.current?.slideNext()}
+                className="btn btn-circle btn-sm btn-outline"
+              >
+                <ChevronRight className="size-4" aria-hidden="true" />
+              </FocusButton>
+            )}
           </div>
         )}
       </div>

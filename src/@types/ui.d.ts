@@ -45,7 +45,18 @@ declare namespace UI {
     className?: string;
     focusKey?: string;
     autoFocus?: boolean;
+    /** Fronteira de foco: setas não saem da seção (modais/overlays). */
+    isFocusBoundary?: boolean;
     "aria-label"?: string;
+  }
+
+  /**
+   * Tela de perfis — gate obrigatório quando `activeProfile === null`
+   * (sem `onClose`) ou troca em runtime sobre o app (com `onClose`).
+   */
+  interface WhosWatchingProps {
+    /** Modo troca: presente habilita Esc/back e o botão "Voltar". */
+    onClose?: () => void;
   }
 
   /** Props do campo de entrada (display de busca). */
@@ -146,7 +157,7 @@ declare namespace UI {
     type?: Media.Kind;
   }
 
-  /** Props do teclado na tela da página de busca. */
+  /** Props do teclado na tela (busca e editor de perfil). */
   interface KeyboardProps {
     onChar: (value: string) => void;
     onBackspace: () => void;

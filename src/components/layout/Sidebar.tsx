@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { Grid2x2, History, Home, List, Power, Search, Settings } from "lucide-react";
 import useNavigation from "../../hooks/useNavigation";
+import useProfile from "../../hooks/useProfile";
 import { isTV } from "../../platform";
 import { FocusSection } from "../ui/FocusSection";
 import { FocusButton } from "../ui/FocusButton";
@@ -24,22 +25,36 @@ const itemClass = (variant: "active" | "idle" | "danger") =>
 
 const Sidebar = () => {
   const { currentPage, navigate } = useNavigation();
+  const { activeProfile, openSwitcher } = useProfile();
+  const initial = activeProfile?.display_name.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <nav aria-label="Navegação principal" className="flex h-full w-18 shrink-0 flex-col bg-base-200 py-5">
       <FocusSection focusKey="SIDEBAR">
-        {/* Perfil */}
+        {/* Perfil — abre o seletor de troca em runtime */}
         <FocusButton
           type="button"
-          aria-label="Perfil"
+          title="Trocar perfil"
+          aria-label={activeProfile ? `Trocar de perfil (${activeProfile.display_name})` : "Perfil"}
+          onClick={openSwitcher}
           className="mx-auto mb-6 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-neutral text-sm font-bold text-neutral-content transition-colors hover:bg-primary hover:text-primary-content"
         >
-          <span
-            aria-hidden="true"
-            className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/45 to-secondary/45"
-          >
-            T
-          </span>
+          {activeProfile?.profile_picture ? (
+            <img
+              src={activeProfile.profile_picture}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/45 to-secondary/45"
+            >
+              {initial}
+            </span>
+          )}
         </FocusButton>
 
         {/* Navegação principal */}

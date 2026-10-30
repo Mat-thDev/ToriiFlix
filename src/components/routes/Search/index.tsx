@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useAtom } from "jotai";
 import { ArrowRight, History, Search } from "lucide-react";
 import { searchQueryAtom } from "../../../atoms/search";
@@ -11,7 +11,7 @@ import { ErrorAlert } from "../../ui/ErrorAlert";
 import { FocusButton } from "../../ui/FocusButton";
 import { Input } from "../../ui/Input";
 import { PosterSkeleton } from "../../skeletons/PosterSkeleton";
-import Keyboard from "./Keyboard";
+import Keyboard from "../../ui/Keyboard";
 
 /** Fase de captura: roda antes do useInputNavigation global (window bubble). */
 const CAPTURE = true;
@@ -29,6 +29,7 @@ const SearchRoute = () => {
   const { items, loading, error, retry } = useSearch(query);
   const { terms, add } = useSearchHistory();
   const { navigate } = useNavigation();
+  const routeRef = useRef<HTMLElement>(null);
 
   // Fundo: primeiro resultado com imagem; fallback estático da Home
   const { page: fallbackPage } = useCatalog("movie", { list: "featured", limit: 10 });
@@ -55,6 +56,10 @@ const SearchRoute = () => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
 
+      // Só digita com o foco dentro da rota: overlay (ex.: troca de perfis)
+      // rouba o foco e o evento não pode vazar para a busca em segundo plano
+      if (!(e.target instanceof Node) || !routeRef.current?.contains(e.target)) return;
+
       if (e.key === "Backspace") {
         e.preventDefault();
         backspace();
@@ -78,7 +83,7 @@ const SearchRoute = () => {
   const showResults = query.trim().length >= 2;
 
   return (
-    <section aria-label="Pesquisa" className="relative -mx-8 -mt-6 min-h-full overflow-hidden">
+    <section ref={routeRef} aria-label="Pesquisa" className="relative -mx-8 -mt-6 min-h-full overflow-hidden">
       {background ? (
         <img
           src={background}

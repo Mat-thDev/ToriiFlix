@@ -5,6 +5,7 @@ import { init } from "@noriginmedia/norigin-spatial-navigation-core";
 import { settingsAtom } from "./atoms/settings";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
+import useEditableFocus from "./hooks/useEditableFocus";
 
 init({
   debug: false,
@@ -26,6 +27,7 @@ const Provider = ({ children }: UI.ProviderProps) => {
   }, [focusSelf]);
 
   useBackNavigation();
+  useEditableFocus();
 
   return (
     <FocusContext.Provider value={focusKey}>

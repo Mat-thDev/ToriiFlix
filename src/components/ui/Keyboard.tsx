@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Delete } from "lucide-react";
-import { FocusButton } from "../../ui/FocusButton";
+import { FocusButton } from "./FocusButton";
 
 const COLUMNS = 7;
 
@@ -19,7 +19,7 @@ const NUMBER_ROWS: string[][] = [
 ];
 
 const KEY_CLASS =
-  "flex h-10 min-w-10 items-center justify-center rounded-lg border border-base-content/10 bg-base-content/5 text-sm font-semibold text-base-content/80 transition-colors hover:border-base-content/30 hover:text-base-content focus-visible:border-primary focus-visible:text-base-content";
+  "flex h-10 min-w-10 items-center justify-center rounded-lg border border-base-content/10 bg-base-content/5 text-sm font-semibold text-base-content/80 transition-colors hover:border-base-content/30 hover:text-base-content";
 
 /**
  * Teclado na tela (10-foot) — grid de 7 colunas em ordem alfabetica,

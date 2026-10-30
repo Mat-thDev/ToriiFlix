@@ -11,6 +11,7 @@ export const POSTER_WIDTH = "w-40 md:w-44 lg:w-48";
 const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => (
   <FocusButton
     type="button"
+    data-focus="inner"
     onClick={() => onSelect?.(item)}
     aria-label={`${item.name}${item.year ? ` (${item.year})` : ""}`}
     className={`group block shrink-0 p-2 text-left ${POSTER_WIDTH}`}

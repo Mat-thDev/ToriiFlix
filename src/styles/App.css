@@ -68,12 +68,28 @@ small,
   line-height: 1.5;
 }
 
-button:focus { outline: none; }
-
-/* Focus */
+/* Foco — uma borda canônica (2px primary, offset 2px).
+   O norigin marca [data-focused] em quem recebe o foco do remote;
+   :focus-visible cobre Tab/teclado físico como fallback.
+   Regras sem @layer vencem o daisyUI (camadas) por cascata. */
 *:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+button[data-focused]:not([data-focus="inner"]) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Cards/tiles com foco interno (ring no pôster): sem outline em volta */
+button[data-focus="inner"]:focus-visible {
+  outline: none;
+}
+
+/* Containers de seção de foco: a indicação fica nos filhos */
+div[data-focus-section]:focus-visible {
+  outline: none;
 }
 
 /* Scrollbar */
