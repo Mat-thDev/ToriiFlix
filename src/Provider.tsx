@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useAtomValue } from "jotai";
 import { useFocusable, FocusContext } from "@noriginmedia/norigin-spatial-navigation-react";
 import { init } from "@noriginmedia/norigin-spatial-navigation-core";
-import { settingsAtom } from "./atoms/settings";
+import { MotionConfig } from "framer-motion";
+import useAppearance from "./hooks/useAppearance";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
 import useEditableFocus from "./hooks/useEditableFocus";
@@ -16,11 +16,16 @@ init({
 
 const Provider = ({ children }: UI.ProviderProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
-  const theme = useAtomValue(settingsAtom).appearance.theme;
+  const { theme, animations } = useAppearance();
 
   useEffect(() => {
     applyPlatformClass();
   }, []);
+
+  // Marca o switch de animações no <html> (CSS corta transições/keyframes)
+  useEffect(() => {
+    document.documentElement.dataset.animations = animations ? "on" : "off";
+  }, [animations]);
 
   useEffect(() => {
     focusSelf();
@@ -31,9 +36,12 @@ const Provider = ({ children }: UI.ProviderProps) => {
 
   return (
     <FocusContext.Provider value={focusKey}>
-      <div ref={ref} data-theme={theme} className="h-full bg-base-300 text-base-content">
-        {children}
-      </div>
+      {/* reducedMotion "always" (switch off) desliga transforms do framer-motion */}
+      <MotionConfig reducedMotion={animations ? "user" : "always"}>
+        <div ref={ref} data-theme={theme} className="h-full bg-base-300 text-base-content">
+          {children}
+        </div>
+      </MotionConfig>
     </FocusContext.Provider>
   );
 };

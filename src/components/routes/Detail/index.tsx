@@ -1,24 +1,42 @@
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Play } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { settingsAtom } from "../../../atoms/settings";
 import useMedia from "../../../hooks/useMedia";
 import useNavigation from "../../../hooks/useNavigation";
+import { useAppTransition } from "../../../hooks/useAppearance";
 import { resolveImdbId } from "../../../services/tmdb/tmdbDetails";
 import { FocusButton } from "../../ui/FocusButton";
 import { Hero } from "../../ui/Hero";
 import { ErrorAlert } from "../../ui/ErrorAlert";
 import { HeroSkeleton } from "../../skeletons/HeroSkeleton";
 import { DetailsSkeleton } from "../../skeletons/DetailsSkeleton";
+import TabBar from "./TabBar";
+import EpisodesTab from "./EpisodesTab";
 import InfoSection from "./InfoSection";
 import CastSection from "./CastSection";
-import SeasonsSection from "./SeasonsSection";
 import GallerySection from "./GallerySection";
 import RelatedSection from "./RelatedSection";
 
+/**
+ * Rota de detalhe — hero + abas (estilo Stremio): Episódios (séries),
+ * Detalhes e Relacionados. O Item do addon aparece na hora; as abas com
+ * conteúdo TMDB surgem quando o enriquecimento responde (sem key/falha,
+ * só o hero é exibido — a tela nunca quebra).
+ */
 const DetailRoute = ({ id, type }: UI.DetailProps) => {
   const { item, details, detailsLoading, loading, error, retry } = useMedia(type, id);
   const { goBack, navigate } = useNavigation();
   const settings = useAtomValue(settingsAtom);
+  const tabTransition = useAppTransition(0.2);
+
+  // null = ainda não escolhida (série começa em Episódios, filme em Detalhes)
+  const [tab, setTab] = useState<UI.DetailTabId | null>(null);
+  const activeTab: UI.DetailTabId = tab ?? (item?.type === "series" ? "episodes" : "details");
+
+  // Navegação Detail→Detail preserva o componente: volta p/ a aba padrão
+  useEffect(() => setTab(null), [id, type]);
 
   // Relacionado vem com id TMDB; converte p/ IMDb (addons só entendem tt...) antes de navegar
   const handleRelated = async (related: Media.Related) => {
@@ -48,6 +66,12 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
   // Só o Item do addon bloqueia a tela; o enriquecimento TMDB é progressivo
   if (!item || loading) return <HeroSkeleton />;
 
+  const tabs: UI.DetailTab[] = [
+    ...(item.type === "series" ? [{ id: "episodes" as const, label: "Episódios" }] : []),
+    { id: "details", label: "Detalhes" },
+    { id: "related", label: "Relacionados" },
+  ];
+
   return (
     <>
       <Hero
@@ -68,21 +92,38 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
         }
       />
 
-      {/* Seções enriquecidas — aparecem quando o TMDB responde; sem key/falha, só o hero */}
-      <div className="mt-10 space-y-12">
-        {detailsLoading && !details && <DetailsSkeleton />}
+      <div className="mt-8">
+        <TabBar tabs={tabs} active={activeTab} onChange={setTab} />
 
-        {details && (
-          <>
-            <InfoSection details={details} />
-            <CastSection cast={details.cast} />
-            {details.type === "series" && (
-              <SeasonsSection details={details} language={settings.system.language} />
-            )}
-            <GallerySection backdrops={details.backdrops} />
-            <RelatedSection details={details} onSelect={handleRelated} />
-          </>
-        )}
+        <div className="mt-6 rounded-2xl bg-base-200/60 p-6 ring-1 ring-base-content/5">
+          {detailsLoading && !details && <DetailsSkeleton />}
+
+          {details && (
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={tabTransition}
+              >
+                {activeTab === "episodes" && item.type === "series" && (
+                  <EpisodesTab details={details} language={settings.system.language} />
+                )}
+
+                {activeTab === "details" && (
+                  <div className="space-y-10">
+                    <InfoSection details={details} />
+                    <CastSection cast={details.cast} />
+                    <GallerySection backdrops={details.backdrops} />
+                  </div>
+                )}
+
+                {activeTab === "related" && <RelatedSection details={details} onSelect={handleRelated} />}
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
       </div>
     </>
   );

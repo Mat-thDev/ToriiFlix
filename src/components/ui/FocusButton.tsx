@@ -1,8 +1,10 @@
 import { useFocusable } from "@noriginmedia/norigin-spatial-navigation-react";
+import { useAnimations } from "../../hooks/useAppearance";
 
 /**
  * Botão focável — primitivo de ação do app (navegação espacial remote/setas).
- * Enter dispara o clique nativo; o foco rola o elemento só o necessário.
+ * Enter dispara o clique nativo; o foco rola o elemento só o necessário
+ * (scroll suave respeita o switch de animações das settings).
  */
 export const FocusButton = ({
   children,
@@ -12,9 +14,15 @@ export const FocusButton = ({
   buttonRef,
   ...rest
 }: UI.FocusButtonProps) => {
+  const animations = useAnimations();
   const { ref, focused, focusSelf } = useFocusable<HTMLButtonElement>({
     onEnterPress: () => ref.current?.click(),
-    onFocus: ({ node }) => node?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }),
+    onFocus: ({ node }) =>
+      node?.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+        behavior: animations ? "smooth" : "auto",
+      }),
   });
 
   return (

@@ -129,6 +129,14 @@ declare namespace UI {
     onSelect?: (item: Media.Item) => void;
   }
 
+  /** Botão de favoritar (lista do perfil) — Hero e cards. */
+  interface FavoriteButtonProps {
+    item: Media.Item;
+    /** Mostra o rótulo ao lado do ícone (Hero). */
+    label?: boolean;
+    className?: string;
+  }
+
   /** Seção de conteúdo da Home (título + carrossel de catálogo do addon). */
   interface MediaSectionProps {
     title: string;
@@ -175,8 +183,23 @@ declare namespace UI {
     cast: Media.CastMember[];
   }
 
-  /** Seção de temporadas/episódios (séries — episódios carregados sob demanda). */
-  interface SeasonsSectionProps {
+  /** Aba da rota Detalhe — Episódios (séries), Detalhes, Relacionados. */
+  interface DetailTab {
+    id: DetailTabId;
+    label: string;
+  }
+
+  type DetailTabId = "episodes" | "details" | "related";
+
+  /** Barra de abas da rota Detalhe. */
+  interface DetailTabBarProps {
+    tabs: DetailTab[];
+    active: DetailTabId;
+    onChange: (id: DetailTabId) => void;
+  }
+
+  /** Aba "Episódios" (séries — episódios carregados sob demanda). */
+  interface EpisodesTabProps {
     details: Media.Details;
     /** Idioma das settings p/ formatar datas dos episódios. */
     language: string;

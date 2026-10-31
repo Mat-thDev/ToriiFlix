@@ -1,20 +1,26 @@
 import { Film, Star } from "lucide-react";
 import { FocusButton } from "./FocusButton";
-
-/** Largura do pôster — compartilhada com o skeleton do carrossel. */
-export const POSTER_WIDTH = "w-40 md:w-44 lg:w-48";
+import { FavoriteButton } from "./FavoriteButton";
+import { usePosterWidth } from "../../hooks/useAppearance";
 
 /**
  * Card de pôster das linhas de catálogo (estilo Netflix/Crunchyroll).
  * `<button>` para ser alcançável pela navegação espacial (remote/setas).
+ * O favoritar fica num botão irmão abaixo do card — fora do retângulo dele,
+ * então as setas ↑↓ alcançam sem atrapalhar o carrossel ←→.
+ * Largura vem da densidade das settings (useAppearance).
  */
-const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => (
+const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => {
+  const posterWidth = usePosterWidth();
+
+  return (
+  <div className={`shrink-0 p-2 ${posterWidth}`}>
   <FocusButton
     type="button"
     data-focus="inner"
     onClick={() => onSelect?.(item)}
     aria-label={`${item.name}${item.year ? ` (${item.year})` : ""}`}
-    className={`group block shrink-0 p-2 text-left ${POSTER_WIDTH}`}
+    className="group block w-full text-left"
   >
     <div className="relative aspect-2/3 overflow-hidden rounded-xl bg-base-200 ring-1 ring-base-content/10 transition-shadow duration-200 group-hover:ring-2 group-hover:ring-primary group-data-focused:ring-2 group-data-focused:ring-primary">
       {item.poster ? (
@@ -46,6 +52,13 @@ const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => (
 
     {item.year && <p className="mt-0.5 text-xs text-base-content/55">{item.year}</p>}
   </FocusButton>
-);
+
+    <FavoriteButton
+      item={item}
+      className="mt-1 flex h-7 w-full items-center justify-center rounded-lg text-base-content/45 transition-colors hover:text-primary"
+    />
+  </div>
+  );
+};
 
 export default MediaCard;

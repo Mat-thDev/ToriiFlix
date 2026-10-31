@@ -4,7 +4,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { SwiperClass } from "swiper/react";
 import "swiper/css";
 import useCatalog from "../../hooks/useCatalog";
-import MediaCard, { POSTER_WIDTH } from "./MediaCard";
+import MediaCard from "./MediaCard";
+import { usePosterWidth } from "../../hooks/useAppearance";
 import { ErrorAlert } from "./ErrorAlert";
 import { FocusButton } from "./FocusButton";
 import { PosterSkeleton } from "../skeletons/PosterSkeleton";
@@ -62,6 +63,7 @@ const MediaSection = ({
 }: UI.MediaSectionProps) => {
   const { page, loading, error, retry } = useCatalog(kind, { list, genre, limit, sources });
   const items = page?.items ?? [];
+  const posterWidth = usePosterWidth();
 
   const swiperRef = useRef<SwiperClass | null>(null);
   const focusinRef = useRef<((event: Event) => void) | null>(null);
@@ -181,7 +183,7 @@ const MediaSection = ({
       {loading && (
         <div aria-busy="true" className="flex gap-4">
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
-            <div key={i} className={`${POSTER_WIDTH} shrink-0`}>
+            <div key={i} className={`${posterWidth} shrink-0`}>
               <PosterSkeleton />
               <div className="mt-2 h-4 w-3/4 animate-pulse rounded bg-base-content/10" />
               <div className="mt-2 h-3 w-1/3 animate-pulse rounded bg-base-content/10" />

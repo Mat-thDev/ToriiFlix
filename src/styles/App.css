@@ -126,7 +126,24 @@ div[data-focus-section]:focus-visible {
 
 /* Swiper (MediaSection): o swiper.css padrão dá width:100% ao slide,
    fazendo slidesPerView="auto" renderizar 1 card por tela. Largura do
-   conteúdo (o MediaCard define w-40/md:w-44/lg:w-48). */
+   conteúdo (o MediaCard define via densidade das settings). */
 .swiper .swiper-slide {
   width: auto;
+}
+
+/* Animações desligadas (settings > Personalização) — corta transições,
+   keyframes e scroll suave em todo o app. framer-motion respeita o mesmo
+   switch via useAppTransition (duration 0) + MotionConfig do Provider. */
+html[data-animations="off"] {
+  scroll-behavior: auto !important;
+}
+
+html[data-animations="off"] *,
+html[data-animations="off"] *::before,
+html[data-animations="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
 }

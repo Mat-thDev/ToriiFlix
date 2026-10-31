@@ -1,5 +1,6 @@
 import { Film, Sparkles, Star } from "lucide-react";
 import { FocusSection } from "./FocusSection";
+import { FavoriteButton } from "./FavoriteButton";
 import { formatRuntime } from "../../utils/format";
 
 /**
@@ -88,7 +89,10 @@ export const Hero = ({ item, details, eyebrow = "Destaque", actions }: UI.HeroPr
         </p>
       )}
 
-      {actions && <div className="mt-6 flex gap-3">{actions}</div>}
+      <div className="mt-6 flex flex-wrap gap-3">
+        {actions}
+        <FavoriteButton item={item} label className="btn btn-outline gap-2" />
+      </div>
     </div>
   </FocusSection>
 );

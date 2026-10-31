@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { Minus, Square, X } from "lucide-react";
 import { isDesktopAtom, isTauriRuntime } from "../../platform";
+import useAppearance from "../../hooks/useAppearance";
 
 /**
  * Controles de janela nativos — a janela roda com `decorations: false`
@@ -24,8 +25,10 @@ const BUTTON_CLASS =
 
 const WindowControls = () => {
   const isDesktop = useAtomValue(isDesktopAtom);
+  const { windowControls } = useAppearance();
 
-  if (!isDesktop) return null;
+  // Setting "Mostrar controles de janela" (Personalização) + só no desktop
+  if (!isDesktop || !windowControls) return null;
 
   return (
     <div className="flex items-center gap-1">

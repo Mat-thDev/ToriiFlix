@@ -15,8 +15,9 @@ declare namespace Users {
     }
   }
 
+  /** Item da lista — só o id IMDb + tipo (meta é resolvida na hora de exibir). */
   export interface ProfileFavorites {
     id: string
-    type: string
+    type: Media.Kind
   }
 }
