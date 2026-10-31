@@ -61,6 +61,23 @@ declare namespace Media {
   }
 
   /**
+   * Stream já mapeado (agregado de todos os addons com recurso `stream`).
+   * Pelo menos um de `url`/`infoHash` presente; ranking fica na camada de player.
+   */
+  interface Stream {
+    /** URL direta — presente em streams não-torrent. */
+    url?: string;
+    /** Hash do torrent (quando não há URL direta). */
+    infoHash?: string;
+    /** Torrent sem URL direta: não toca no navegador — exibir estado "torrent-only". */
+    torrentOnly: boolean;
+    /** Nome do addon que serviu o stream (ex.: "Torrentio"). */
+    provider: string;
+    /** Título/linha do stream no formato do addon (qualidade, idioma, tamanho...). */
+    title?: string;
+  }
+
+  /**
    * Título relacionado (recommendations do TMDB) — id é do TMDB,
    * não do addon; resolver para IMDb antes de navegar (ver `resolveImdbId`).
    */
@@ -129,6 +146,13 @@ declare namespace Media {
   /** Opções de busca no catálogo (extra `search` do protocolo). */
   interface SearchOptions {
     limit?: number;
+    sources?: string[];
+    signal?: AbortSignal;
+  }
+
+  /** Opções de leitura de streams de um item. */
+  interface StreamOptions {
+    /** Bases dos addons consultados (ver `streamSources`); default: nenhum (nenhum built-in serve stream). */
     sources?: string[];
     signal?: AbortSignal;
   }

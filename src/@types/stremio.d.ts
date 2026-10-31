@@ -39,9 +39,14 @@ declare namespace Stremio {
     streams: Stream[];
   }
 
-  /** Stream de um addon — campos principais do protocolo (ranking fica na camada de player). */
+  /** Stream de um addon — campos do protocolo (ranking fica na camada de player). */
   interface Stream {
+    /** URL direta (http(s)/file) — presente em streams não-torrent. */
     url?: string;
+    /** Hash do torrent — streams só com `infoHash` não tocam no navegador (DOSSIE). */
+    infoHash?: string;
+    /** Índice do arquivo dentro do torrent (quando o torrent tem vários). */
+    fileIdx?: number;
     name?: string;
     title?: string;
     behaviorHints?: Record<string, unknown>;

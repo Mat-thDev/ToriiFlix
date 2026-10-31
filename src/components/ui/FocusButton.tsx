@@ -12,11 +12,15 @@ export const FocusButton = ({
   onClick,
   onFocus,
   buttonRef,
+  focusKey,
+  onArrowPress,
   ...rest
 }: UI.FocusButtonProps) => {
   const animations = useAnimations();
   const { ref, focused, focusSelf } = useFocusable<HTMLButtonElement>({
+    focusKey,
     onEnterPress: () => ref.current?.click(),
+    onArrowPress: (direction) => onArrowPress?.(direction) ?? true,
     onFocus: ({ node }) =>
       node?.scrollIntoView({
         block: "nearest",

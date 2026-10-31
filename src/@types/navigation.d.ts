@@ -1,6 +1,6 @@
 declare namespace Nav {
   /** Páginas navegáveis do app. */
-  type Page = "Home" | "Detail" | "Search" | "Catalogue" | "History" | "Channels" | "Settings";
+  type Page = "Home" | "Detail" | "Search" | "Catalogue" | "History" | "Channels" | "Settings" | "Watch";
 
   /** Props aceitas por cada página (fonte única do contrato de rotas). */
   interface PageProps {
@@ -11,6 +11,7 @@ declare namespace Nav {
     History: undefined;
     Channels: undefined;
     Settings: undefined;
+    Watch: undefined;
   }
 
   interface RouteState {

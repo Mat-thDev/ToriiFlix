@@ -13,12 +13,12 @@ import { useAppTransition } from "./hooks/useAppearance";
 import WindowControls from "./components/layout/WindowControls";
 import { FocusSection } from "./components/ui/FocusSection";
 import WhosWatching from "./components/ui/WhosWatching";
+import WatchRoute from "./components/routes/Watch";
 
 /** Roteamento sem componentes dinâmicos: cada página com suas props do contrato Nav.PageProps. */
 const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactElement => {
   switch (page) {
     case "Detail":
-      // navigate("Detail", ...) sempre envia { id, type } — contrato em Nav.PageProps
       return <DetailRoute {...(props as UI.DetailProps)} />;
     case "Search":
       return <SearchRoute />;
@@ -29,6 +29,8 @@ const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactEleme
     case "History":
     case "Channels":
       return <NotFoundRoute />;
+    case "Watch":
+      return <WatchRoute />;
     default:
       return <HomeRoute />;
   }
@@ -39,7 +41,7 @@ const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactEleme
  * (que cobre a TopBar) os controles flutuam acima — fora do desktop é null.
  */
 const FloatingWindowControls = () => (
-  <div className="fixed top-6 right-8 z-[60]">
+  <div className="fixed top-6 right-8 z-60">
     <WindowControls />
   </div>
 );
@@ -60,8 +62,6 @@ const App = () => {
   return (
     <>
       <AppLayout>
-        {/* Transição de rota (framer-motion) — sai e entra em sequência; o
-            autofocus do FocusSection roda no mount da nova página */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={currentPage}
@@ -71,13 +71,12 @@ const App = () => {
             transition={transition}
           >
             <FocusSection autoFocus>
-              {renderRoute(currentPage, currentProps)}
+              {renderRoute("Watch", currentProps)}
             </FocusSection>
           </motion.div>
         </AnimatePresence>
       </AppLayout>
 
-      {/* Troca em runtime: seletor por cima do app, fechável com Esc/back */}
       {switcherOpen && (
         <>
           <WhosWatching onClose={closeSwitcher} />

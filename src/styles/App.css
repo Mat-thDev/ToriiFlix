@@ -2,12 +2,16 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* Themes - cinematográficos Netflix/HBO/Crunchyroll */
+
+/* Themes */
 @import "./themes/default.theme.css";
 @import "./themes/torii-cinema.theme.css";
 @import "./themes/torii-ember.theme.css";
 @import "./themes/torii-ink.theme.css";
 @import "./themes/torii-noir.theme.css";
+
+@import '@videojs/react/video/skin.css';
+@import "react-toastify/dist/ReactToastify.css";
 
 /* Base */
 :root {
@@ -92,6 +96,20 @@ div[data-focus-section]:focus-visible {
   outline: none;
 }
 
+/* Pop do ícone ao favoritar (FavoriteButton overlay) — o remount via key
+   no React dispara a animação; html[data-animations="off"] corta (regra abaixo). */
+@keyframes fav-pop {
+  0% {
+    transform: scale(0.55);
+  }
+  60% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Scrollbar */
 * {
   scrollbar-width: thin;
@@ -129,6 +147,77 @@ div[data-focus-section]:focus-visible {
    conteúdo (o MediaCard define via densidade das settings). */
 .swiper .swiper-slide {
   width: auto;
+}
+
+/* react-toastify — tokens do design system (cores, raios, anel, fonte).
+   O container portaia no <body>, fora do div[data-theme]; o Provider
+   replica o tema em <html> para as variáveis --color-* acompanharem. */
+.Toastify {
+  --toastify-font-family: 'Outfit', 'Noto Sans JP', 'Noto Sans', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --toastify-color-light: var(--color-base-200);
+  --toastify-color-dark: var(--color-base-200);
+  --toastify-color-info: var(--color-info);
+  --toastify-color-success: var(--color-success);
+  --toastify-color-warning: var(--color-warning);
+  --toastify-color-error: var(--color-error);
+  --toastify-text-color-light: var(--color-base-content);
+  --toastify-text-color-dark: var(--color-base-content);
+  --toastify-icon-color-info: var(--color-info);
+  --toastify-icon-color-success: var(--color-success);
+  --toastify-icon-color-warning: var(--color-warning);
+  --toastify-icon-color-error: var(--color-error);
+  --toastify-color-progress-dark: var(--color-primary);
+  --toastify-color-progress-info: var(--color-info);
+  --toastify-color-progress-success: var(--color-success);
+  --toastify-color-progress-warning: var(--color-warning);
+  --toastify-color-progress-error: var(--color-error);
+  --toastify-color-progress-bgo: 0.15;
+  --toastify-toast-bd-radius: var(--radius-box);
+  --toastify-toast-shadow: none;
+  --toastify-toast-padding: 0.875rem 1rem;
+  --toastify-toast-min-height: 3.5rem;
+  --toastify-spinner-color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+  --toastify-spinner-color-empty-area: color-mix(in oklab, var(--color-base-content) 15%, transparent);
+}
+
+.Toastify__toast {
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+  font-size: 0.875rem;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.Toastify__toast--info {
+  background: color-mix(in oklab, var(--color-info) 12%, var(--color-base-200));
+}
+
+.Toastify__toast--success {
+  background: color-mix(in oklab, var(--color-success) 12%, var(--color-base-200));
+}
+
+.Toastify__toast--warning {
+  background: color-mix(in oklab, var(--color-warning) 12%, var(--color-base-200));
+}
+
+.Toastify__toast--error {
+  background: color-mix(in oklab, var(--color-error) 12%, var(--color-base-200));
+}
+
+.Toastify__progress-bar--wrp {
+  height: 3px;
+}
+
+.Toastify__progress-bar {
+  opacity: 1;
+}
+
+.Toastify__close-button {
+  color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+}
+
+.Toastify__close-button:hover,
+.Toastify__close-button:focus {
+  color: var(--color-base-content);
 }
 
 /* Animações desligadas (settings > Personalização) — corta transições,

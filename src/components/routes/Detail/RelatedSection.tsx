@@ -2,11 +2,7 @@ import { Film } from "lucide-react";
 import { FocusButton } from "../../ui/FocusButton";
 import { usePosterWidth } from "../../../hooks/useAppearance";
 
-/**
- * Seção de relacionados — cards de pôster focáveis (densidade das settings).
- * O id é do TMDB; a conversão para IMDb (formato dos addons) acontece no
- * clique, na rota.
- */
+ 
 const RelatedSection = ({ details, onSelect }: UI.RelatedSectionProps) => {
   const posterWidth = usePosterWidth();
 

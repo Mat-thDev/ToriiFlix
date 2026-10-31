@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useAtom } from "jotai";
 import { profilesAtom } from "../atoms/profiles";
+import { toast } from "react-toastify";
 
 /**
  * Favoritos (lista) do perfil ativo — persiste em `profilesAtom` apenas
@@ -31,6 +32,9 @@ const useFavorites = () => {
           ...prev.activeProfile,
           media: { ...prev.activeProfile.media, favorites: next },
         };
+
+
+        toast.success(exists ? "Título removido dos favoritos." : "Título favoritado.")
 
         return {
           activeProfile,

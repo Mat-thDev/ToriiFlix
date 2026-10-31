@@ -35,6 +35,13 @@ declare namespace Hooks {
     error: string | null;
   }
 
+  /** Estado do hook `useStreams` (streams agregados dos addons com recurso `stream`). */
+  interface StreamsState {
+    streams: Media.Stream[];
+    loading: boolean;
+    error: string | null;
+  }
+
   /** Parâmetros de leitura do hook `useCatalog` (sem signal — o hook cuida do abort). */
   type CatalogParams = Pick<Media.CatalogOptions, "list" | "genre" | "limit" | "sources">;
 }

@@ -134,9 +134,9 @@ const AddonsTab = () => {
         )}
       </SettingsGroup>
 
-      <SettingsGroup title="TMDB">
+      <SettingsGroup title="Integrações">
         <SettingsRow
-          title="Chave API"
+          title="TMDB Api Key"
           description="Utilizada para buscar informações mais completas em diversos idiomas."
           control={
             <div className="flex w-full max-w-md items-center gap-2">

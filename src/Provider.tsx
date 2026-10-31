@@ -6,6 +6,8 @@ import useAppearance from "./hooks/useAppearance";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
 import useEditableFocus from "./hooks/useEditableFocus";
+import { ToastContainer } from "react-toastify";
+import ModalProvider from "./components/modals";
 
 init({
   debug: false,
@@ -27,6 +29,12 @@ const Provider = ({ children }: UI.ProviderProps) => {
     document.documentElement.dataset.animations = animations ? "on" : "off";
   }, [animations]);
 
+  // Tema também no <html>: o ToastContainer portaia no <body>, fora do
+  // div[data-theme] — sem isso os tokens --color-* dos toasts ficariam presos ao tema padrão.
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
   useEffect(() => {
     focusSelf();
   }, [focusSelf]);
@@ -36,9 +44,18 @@ const Provider = ({ children }: UI.ProviderProps) => {
 
   return (
     <FocusContext.Provider value={focusKey}>
-      {/* reducedMotion "always" (switch off) desliga transforms do framer-motion */}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+      />
       <MotionConfig reducedMotion={animations ? "user" : "always"}>
         <div ref={ref} data-theme={theme} className="h-full bg-base-300 text-base-content">
+          <ModalProvider />
           {children}
         </div>
       </MotionConfig>

@@ -37,6 +37,10 @@ declare namespace UI {
   interface FocusButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     /** Expõe o `<button>` interno (ex.: para focar a primeira tecla do teclado na tela). */
     buttonRef?: React.RefObject<HTMLButtonElement | null>;
+    /** Chave estável do norigin (para outro componente setFocus direcionado). */
+    focusKey?: string;
+    /** Intercepta setas do remote; retornar `false` cancela a navegação geométrica default. */
+    onArrowPress?: (direction: string) => boolean | void;
   }
 
   /** Props da seção focável (provedor de contexto de foco). */
@@ -135,6 +139,14 @@ declare namespace UI {
     /** Mostra o rótulo ao lado do ícone (Hero). */
     label?: boolean;
     className?: string;
+    /** Variante overlay: circular, dentro do pôster (MediaCard). Revelação via hover/foco. */
+    variant?: "overlay";
+    /** Revela o overlay sem hover (ex.: quando o card irmão recebe foco do remote). */
+    reveal?: boolean;
+    /** Chave estável do norigin (repassada ao FocusButton). */
+    focusKey?: string;
+    /** Intercepta setas do remote (repassada ao FocusButton). */
+    onArrowPress?: (direction: string) => boolean | void;
   }
 
   /** Seção de conteúdo da Home (título + carrossel de catálogo do addon). */

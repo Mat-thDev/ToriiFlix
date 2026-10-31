@@ -5,12 +5,7 @@ import { formatDate, formatRuntime } from "../../../utils/format";
 import { FocusButton } from "../../ui/FocusButton";
 import { ErrorAlert } from "../../ui/ErrorAlert";
 
-/**
- * Aba "Episódios" (séries) — coluna de temporadas à esquerda e lista de
- * episódios da temporada selecionada à direita, carregada sob demanda
- * (useSeason). Episódios são focáveis p/ percorrer a lista com o remote;
- * player em breve.
- */
+
 const EpisodesTab = ({ details, language }: UI.EpisodesTabProps) => {
   const [seasonNumber, setSeasonNumber] = useState<number | undefined>(details.seasons[0]?.number);
   const { episodes, loading, error, retry } = useSeason(details.tmdbId, seasonNumber, true);

@@ -18,16 +18,12 @@ import InfoSection from "./InfoSection";
 import CastSection from "./CastSection";
 import GallerySection from "./GallerySection";
 import RelatedSection from "./RelatedSection";
+import useModals from "../../../hooks/useModals";
 
-/**
- * Rota de detalhe — hero + abas (estilo Stremio): Episódios (séries),
- * Detalhes e Relacionados. O Item do addon aparece na hora; as abas com
- * conteúdo TMDB surgem quando o enriquecimento responde (sem key/falha,
- * só o hero é exibido — a tela nunca quebra).
- */
 const DetailRoute = ({ id, type }: UI.DetailProps) => {
   const { item, details, detailsLoading, loading, error, retry } = useMedia(type, id);
   const { goBack, navigate } = useNavigation();
+  const { showModal } = useModals()
   const settings = useAtomValue(settingsAtom);
   const tabTransition = useAppTransition(0.2);
 
@@ -80,7 +76,7 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
         eyebrow={item.type === "movie" ? "Filme" : "Série"}
         actions={
           <>
-            <FocusButton type="button" className="btn btn-primary gap-2" disabled title="Player em breve">
+            <FocusButton type="button" className="btn btn-primary gap-2" onClick={() => showModal("StreamSelector", { type, id, item, details })}>
               <Play className="size-5" aria-hidden="true" />
               Assistir
             </FocusButton>

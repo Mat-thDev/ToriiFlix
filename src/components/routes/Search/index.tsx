@@ -18,12 +18,6 @@ const CAPTURE = true;
 
 const RESULT_SKELETON_COUNT = 8;
 
-/**
- * Busca estilo smart TV (referencia webOS): campo no topo, teclado na
- * tela + historico a esquerda, dica/resultados a direita, fundo full-bleed.
- * Digitação física em fase de captura para não conflitar com o
- * Backspace/voltar do handler global.
- */
 const SearchRoute = () => {
   const [query, setQuery] = useAtom(searchQueryAtom);
   const { items, loading, error, retry } = useSearch(query);

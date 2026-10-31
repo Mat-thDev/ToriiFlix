@@ -1,5 +1,6 @@
 import { CINEMETA } from "./builtinAddons";
 import { hasResource } from "./resources";
+import { settleOrThrow } from "./settle";
 import { getCatalog, getMeta } from "./StremioClient";
 
 /** Fallback: só o addon embutido (quando nenhum externo é informado). */
@@ -57,25 +58,6 @@ const mergeItems = (batches: Media.Item[][], limit: number): Media.Item[] => {
   }
 
   return items;
-};
-
-/**
- * Executa as requisições em paralelo descartando fontes que falharem
- * (addon pode não ter o catálogo pedido — ids como "top" são do Cinemeta).
- * Se todas falharem, repassa o primeiro erro.
- */
-const settleOrThrow = async <T>(requests: Promise<T>[]): Promise<Awaited<T>[]> => {
-  const results = await Promise.allSettled(requests);
-  const fulfilled = results.filter(
-    (r): r is PromiseFulfilledResult<Awaited<T>> => r.status === "fulfilled",
-  );
-
-  if (fulfilled.length === 0) {
-    const rejected = results.find((r): r is PromiseRejectedResult => r.status === "rejected");
-    throw rejected?.reason ?? new Error("Nenhum addon respondeu");
-  }
-
-  return fulfilled.map((r) => r.value);
 };
 
 /** Lista um catálogo em todos os addons informados (filmes ou séries). */
