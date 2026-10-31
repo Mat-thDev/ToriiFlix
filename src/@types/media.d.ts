@@ -20,6 +20,86 @@ declare namespace Media {
     rating?: string;
   }
 
+  /** Elenco exibido no detalhe (top N do TMDB). */
+  interface CastMember {
+    name: string;
+    character?: string;
+    /** URL do retrato (w185). */
+    profile?: string;
+  }
+
+  /** Título alternativo do TMDB (região + título). */
+  interface AlternativeTitle {
+    /** Sigla ISO 3166-1, ex.: "BR". */
+    region?: string;
+    title: string;
+  }
+
+  /** Provedor de streaming da região do usuário (watch/providers). */
+  interface WatchProvider {
+    name: string;
+    /** URL do logo (w92). */
+    logo?: string;
+  }
+
+  /** Temporada de série (resumo — episódios ficam em `EpisodesState`). */
+  interface Season {
+    number: number;
+    name?: string;
+    episodeCount?: number;
+    airDate?: string;
+  }
+
+  /** Episódio (carregado sob demanda ao escolher a temporada). */
+  interface Episode {
+    number: number;
+    name?: string;
+    overview?: string;
+    runtime?: number;
+    still?: string;
+    airDate?: string;
+  }
+
+  /**
+   * Título relacionado (recommendations do TMDB) — id é do TMDB,
+   * não do addon; resolver para IMDb antes de navegar (ver `resolveImdbId`).
+   */
+  interface Related {
+    tmdbId: number;
+    type: Kind;
+    name: string;
+    poster?: string;
+    year?: string;
+  }
+
+  /**
+   * Detalhe enriquecido: `Item` do addon + TMDB no idioma das settings.
+   * Título/sinopse/gêneros vêm localizados do TMDB (fallback: addon).
+   */
+  interface Details extends Item {
+    /** Id do registro TMDB — base p/ temporadas e relacionados. */
+    tmdbId: number;
+    tagline?: string;
+    /** Duração em minutos (filme) ou por episódio (série). */
+    runtime?: number;
+    /** Nota TMDB (0–10). */
+    voteAverage?: number;
+    /** Título original (quando difere do localizado). */
+    originalTitle?: string;
+    director?: string;
+    cast: CastMember[];
+    alternativeTitles: AlternativeTitle[];
+    /** Onde assistir — provedores da região (preferindo assinatura, senão aluguel ou compra). */
+    providers: WatchProvider[];
+    /** Backdrops em resolução média (w780). */
+    backdrops: string[];
+    /** Séries: resumos das temporadas (episódios sob demanda). */
+    seasons: Season[];
+    /** Séries: total de episódios. */
+    episodeCount?: number;
+    related: Related[];
+  }
+
   /** Página de catálogo. */
   interface Page {
     items: Item[];

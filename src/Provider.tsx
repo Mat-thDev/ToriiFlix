@@ -6,7 +6,6 @@ import { settingsAtom } from "./atoms/settings";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
 import useEditableFocus from "./hooks/useEditableFocus";
-import { TMDBService } from "./services/tmdb/tmdbService";
 
 init({
   debug: false,
@@ -18,7 +17,6 @@ init({
 const Provider = ({ children }: UI.ProviderProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
   const theme = useAtomValue(settingsAtom).appearance.theme;
-  const apiKey = useAtomValue(settingsAtom).addons.tmdbApiKey;
 
   useEffect(() => {
     applyPlatformClass();
@@ -30,11 +28,6 @@ const Provider = ({ children }: UI.ProviderProps) => {
 
   useBackNavigation();
   useEditableFocus();
-
-
-  const TMDB = new TMDBService({ api_key: apiKey ?? "", language: "pt-BR" });
-  const findData = TMDB.findByIMDB("tt28014327")
-  console.log(findData, apiKey);
 
   return (
     <FocusContext.Provider value={focusKey}>

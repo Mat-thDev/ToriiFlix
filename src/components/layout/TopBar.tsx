@@ -61,16 +61,15 @@ const TopBar = () => {
 
   return (
     <header
-      data-tauri-drag-region
       className={clsx(
-        "absolute top-0 right-0 left-0 z-10 shrink-0 px-8 transition-all duration-300 ease-out",
+        "absolute top-0 right-0 left-0 shrink-0 px-8 transition-all duration-300 ease-out z-99",
         scrolled ? "pt-3 pb-3" : "pt-6",
         scrolled &&
-          "bg-base-300/85 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] backdrop-blur-md",
+        "bg-base-300/85 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] backdrop-blur-md",
         hidden && "pointer-events-none -translate-y-full opacity-0",
       )}
     >
-      <div className="flex items-start justify-between">
+      <div data-tauri-drag-region className="flex items-start justify-between">
         <div className="" />
 
         <div className="flex items-start gap-3">

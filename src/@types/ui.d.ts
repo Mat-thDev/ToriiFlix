@@ -110,6 +110,8 @@ declare namespace UI {
   /** Hero de destaque/detalhe — imagem + scrims + texto + ações. */
   interface HeroProps {
     item: Media.Item;
+    /** Detalhes TMDB (tela de detalhe) — adiciona tagline e duração no hero. */
+    details?: Media.Details | null;
     /** Sobrescreve o eyebrow padrão (ex.: "Filme", "Série"). */
     eyebrow?: string;
     actions?: React.ReactNode;
@@ -161,5 +163,33 @@ declare namespace UI {
   interface KeyboardProps {
     onChar: (value: string) => void;
     onBackspace: () => void;
+  }
+
+  /** Seção "Sobre" do detalhe (sinopse, direção, títulos alternativos, onde assistir). */
+  interface InfoSectionProps {
+    details: Media.Details;
+  }
+
+  /** Seção de elenco principal (linha horizontal estática). */
+  interface CastSectionProps {
+    cast: Media.CastMember[];
+  }
+
+  /** Seção de temporadas/episódios (séries — episódios carregados sob demanda). */
+  interface SeasonsSectionProps {
+    details: Media.Details;
+    /** Idioma das settings p/ formatar datas dos episódios. */
+    language: string;
+  }
+
+  /** Seção de galeria (backdrops do TMDB). */
+  interface GallerySectionProps {
+    backdrops: string[];
+  }
+
+  /** Seção de relacionados (TMDB→IMDb convertido no clique, antes de navegar). */
+  interface RelatedSectionProps {
+    details: Media.Details;
+    onSelect: (related: Media.Related) => void;
   }
 }

@@ -44,7 +44,6 @@ const App = () => {
   const { currentPage, currentProps } = useNavigation();
   const { activeProfile, switcherOpen, closeSwitcher } = useProfile();
 
-  // Gate obrigatório: sem perfil ativo o app inteiro fica atrás da tela de perfis
   if (!activeProfile)
     return (
       <>
