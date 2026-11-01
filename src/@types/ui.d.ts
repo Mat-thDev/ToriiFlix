@@ -133,6 +133,14 @@ declare namespace UI {
     onSelect?: (item: Media.Item) => void;
   }
 
+  interface MediaHorizontalCardProps extends MediaCardProps {
+    watchProgress?: {
+      watchedTime: number
+      duration: number;
+      watched: boolean
+    }
+  }
+
   /** Botão de favoritar (lista do perfil) — Hero e cards. */
   interface FavoriteButtonProps {
     item: Media.Item;
@@ -214,7 +222,7 @@ declare namespace UI {
 
   /** Aba "Episódios" (séries — episódios carregados sob demanda). */
   interface EpisodesTabProps {
-    details: Media.Details;
+    media: Player.MediaPayload;
     /** Idioma das settings p/ formatar datas dos episódios. */
     language: string;
   }

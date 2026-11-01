@@ -150,10 +150,16 @@ declare namespace Media {
     signal?: AbortSignal;
   }
 
+  interface EpisodeRef {
+    season: number;
+    number: number;
+  }
+
   /** Opções de leitura de streams de um item. */
   interface StreamOptions {
     /** Bases dos addons consultados (ver `streamSources`); default: nenhum (nenhum built-in serve stream). */
     sources?: string[];
+    episode?: EpisodeRef;
     signal?: AbortSignal;
   }
 
@@ -166,5 +172,15 @@ declare namespace Media {
     baseUrl: string;
     kind: Kind;
     list: string;
+  }
+
+
+  interface MediaHistory {
+    id: string | number;
+    media: Media.Item;
+    watchedTime: number;
+    duration: number;
+    watched: boolean
+    timestamp: string;
   }
 }

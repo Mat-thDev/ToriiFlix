@@ -3,15 +3,10 @@ import { hasResource } from "./resources";
 import { settleOrThrow } from "./settle";
 import { getCatalog, getMeta } from "./StremioClient";
 
-/** Fallback: só o addon embutido (quando nenhum externo é informado). */
 const DEFAULT_SOURCES = [CINEMETA.baseUrl];
 
 const isKind = (type?: string): type is Media.Kind => type === "movie" || type === "series";
 
-/**
- * Bases dos addons que servem `catalog`: built-in + externos habilitados.
- * Passar para as opções das funções do serviço (hooks leem o atom de addons).
- */
 export const catalogSources = (external: Stremio.ExternalAddon[] = []): string[] => [
   ...DEFAULT_SOURCES,
   ...external
@@ -67,8 +62,6 @@ export const listCatalog = async (
 ): Promise<Media.Page> => {
   const { list = "top", genre, limit = 20, sources = DEFAULT_SOURCES, signal } = options;
 
-  // Extras só com o que tem valor; `limit` não é extra do protocolo
-  // (paginação é `skip`) — o merge cuida do corte.
   const extra: Stremio.Extra = {};
   if (genre) extra.genre = genre;
 
@@ -79,7 +72,7 @@ export const listCatalog = async (
   return { items: mergeItems(responses.map(toItems), limit) };
 };
 
-/** Detalhe de um item (movie/series) — a primeira fonte que responder meta válida vence. */
+/** Detalhe de um item (movie/series). */
 export const getMedia = async (
   kind: Media.Kind,
   id: string,
@@ -97,11 +90,6 @@ export const getMedia = async (
   return null;
 };
 
-/**
- * Busca no extra `search` do protocolo
- * (/catalog/{type}/{top}/search=<q>.json) em todos os addons informados,
- * consultando movie + series e mergeando.
- */
 export const searchCatalog = async (
   query: string,
   options: Media.SearchOptions = {},

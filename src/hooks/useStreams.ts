@@ -10,11 +10,14 @@ const INITIAL_STATE: Hooks.StreamsState = {
 };
 
 
-const useStreams = (kind: Media.Kind | undefined, id: string | undefined) => {
+const useStreams = (kind: Media.Kind | undefined, id: string | undefined, episode?: Media.EpisodeRef) => {
   const addons = useAtomValue(addonsAtom);
   const sources = useMemo(() => streamSources(addons), [addons]);
   const [state, setState] = useState<Hooks.StreamsState>(INITIAL_STATE);
   const [attempt, setAttempt] = useState(0);
+
+  const season = episode?.season;
+  const number = episode?.number;
 
   useEffect(() => {
     if (!kind || !id) {
@@ -30,7 +33,9 @@ const useStreams = (kind: Media.Kind | undefined, id: string | undefined) => {
     const controller = new AbortController();
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    listStreams(kind, id, { sources, signal: controller.signal })
+    const ep = season !== undefined && number !== undefined ? { season, number } : undefined;
+
+    listStreams(kind, id, { sources, episode: ep, signal: controller.signal })
       .then((streams) => {
         if (!controller.signal.aborted) setState({ streams, loading: false, error: null });
       })
@@ -44,7 +49,7 @@ const useStreams = (kind: Media.Kind | undefined, id: string | undefined) => {
       });
 
     return () => controller.abort();
-  }, [kind, id, sources, attempt]);
+  }, [kind, id, season, number, sources, attempt]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 

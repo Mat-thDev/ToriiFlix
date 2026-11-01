@@ -6,6 +6,7 @@ import { isBackEvent } from "../../platform/input";
 import { FocusButton } from "../ui/FocusButton";
 import { FocusSection } from "../ui/FocusSection";
 import StreamListModal from "./StreamListModal";
+import useNavigation from "../../hooks/useNavigation";
 
 const MODAL_MAPPING: Record<Modals.ModalsKeys, ComponentType<any>> = {
   StreamSelector: StreamListModal,
@@ -13,9 +14,14 @@ const MODAL_MAPPING: Record<Modals.ModalsKeys, ComponentType<any>> = {
 
 const ModalProvider = () => {
   const { currentModal, currentProps, closeModal } = useModals();
+  const { currentPage } = useNavigation()
 
-  // Esc/Backspace/voltar fecha o modal sem popar a rota atrás (mesmo
-  // capture-phase do WhosWatching — vence o useBackNavigation global).
+  useEffect(() => {
+    if (!currentModal) return;
+    closeModal();
+  }, [currentPage])
+
+
   useEffect(() => {
     if (!currentModal) return;
 

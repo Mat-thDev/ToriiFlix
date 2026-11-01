@@ -5,10 +5,7 @@ import { getSeasonEpisodes } from "../services/tmdb/tmdbDetails";
 
 const INITIAL: Hooks.SeasonState = { episodes: [], loading: false, error: null };
 
-/**
- * Episódios de uma temporada do TMDB — carregados sob demanda ao escolher
- * a temporada na tela de detalhe. Abort no unmount; sem API key fica ocioso.
- */
+
 const useSeason = (
   tmdbId: number | undefined,
   seasonNumber: number | undefined,

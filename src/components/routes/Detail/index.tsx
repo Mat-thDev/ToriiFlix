@@ -27,14 +27,11 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
   const settings = useAtomValue(settingsAtom);
   const tabTransition = useAppTransition(0.2);
 
-  // null = ainda não escolhida (série começa em Episódios, filme em Detalhes)
   const [tab, setTab] = useState<UI.DetailTabId | null>(null);
   const activeTab: UI.DetailTabId = tab ?? (item?.type === "series" ? "episodes" : "details");
 
-  // Navegação Detail→Detail preserva o componente: volta p/ a aba padrão
   useEffect(() => setTab(null), [id, type]);
 
-  // Relacionado vem com id TMDB; converte p/ IMDb (addons só entendem tt...) antes de navegar
   const handleRelated = async (related: Media.Related) => {
     const imdbId = await resolveImdbId(related.type, related.tmdbId, {
       apiKey: settings.addons.tmdbApiKey ?? "",
@@ -59,7 +56,6 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
     );
   }
 
-  // Só o Item do addon bloqueia a tela; o enriquecimento TMDB é progressivo
   if (!item || loading) return <HeroSkeleton />;
 
   const tabs: UI.DetailTab[] = [
@@ -76,7 +72,7 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
         eyebrow={item.type === "movie" ? "Filme" : "Série"}
         actions={
           <>
-            <FocusButton type="button" className="btn btn-primary gap-2" onClick={() => showModal("StreamSelector", { type, id, item, details })}>
+            <FocusButton type="button" className="btn btn-primary gap-2" onClick={() => showModal("StreamSelector", { type, id, item, details: details ?? undefined })}>
               <Play className="size-5" aria-hidden="true" />
               Assistir
             </FocusButton>
@@ -104,7 +100,7 @@ const DetailRoute = ({ id, type }: UI.DetailProps) => {
                 transition={tabTransition}
               >
                 {activeTab === "episodes" && item.type === "series" && (
-                  <EpisodesTab details={details} language={settings.system.language} />
+                  <EpisodesTab media={{ item, details }} language={settings.system.language} />
                 )}
 
                 {activeTab === "details" && (

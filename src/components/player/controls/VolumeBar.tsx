@@ -1,7 +1,27 @@
 import { Volume1, Volume2, VolumeX } from "lucide-react";
 import { MuteButton, VolumeSlider } from "@videojs/react";
+import { usePlayer } from "@videojs/react/video/player";
+import { useRef, useEffect } from "react";
+import useSettings from "../../../hooks/useSettings";
 
-const VolumeBar = () => {
+const VolumeBar = ({ playbackSettings }: { playbackSettings: AppSettings.Playback }) => {
+
+  const { changeSetting } = useSettings()
+  const store = usePlayer();
+  const volumePlayer = usePlayer((s) => s.volume);
+  const restored = useRef(false);
+
+  useEffect(() => {
+    if (!store.target || !restored.current) return;
+
+    store.setVolume(playbackSettings.volume / 100);
+    restored.current = true;
+  }, [store, playbackSettings]);
+
+  useEffect(() => {
+    changeSetting("playback", { volume: volumePlayer * 100 });
+  }, [volumePlayer]);
+
 
   return (
     <div className="flex items-center gap-2">

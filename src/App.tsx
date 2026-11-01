@@ -14,8 +14,9 @@ import WindowControls from "./components/layout/WindowControls";
 import { FocusSection } from "./components/ui/FocusSection";
 import WhosWatching from "./components/ui/WhosWatching";
 import WatchRoute from "./components/routes/Watch";
+import HistoryRoute from "./components/routes/History";
 
-/** Roteamento sem componentes dinâmicos: cada página com suas props do contrato Nav.PageProps. */
+
 const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactElement => {
   switch (page) {
     case "Detail":
@@ -27,6 +28,7 @@ const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactEleme
     case "Catalogue":
       return <CatalogueRoute />;
     case "History":
+      return <HistoryRoute />;
     case "Channels":
       return <NotFoundRoute />;
     case "Watch":
@@ -36,10 +38,6 @@ const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactEleme
   }
 };
 
-/**
- * A janela roda com `decorations: false`, então sobre o overlay de perfis
- * (que cobre a TopBar) os controles flutuam acima — fora do desktop é null.
- */
 const FloatingWindowControls = () => (
   <div className="fixed top-6 right-8 z-60">
     <WindowControls />

@@ -13,20 +13,18 @@ import useNavigation from "../../hooks/useNavigation";
 type StreamSelectorProps = Modals.PropsMap["StreamSelector"];
 
 
-const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
-  const invalid = !type || !id;
-  const { streams, loading, error, retry } = useStreams(type, id);
+const StreamListModal = ({ type, id, item, details, episode }: StreamSelectorProps) => {
+  const invalid = !type || !id || (type === "series" && !episode);
+  const { streams, loading, error, retry } = useStreams(type, id, episode);
   const { navigate } = useNavigation()
 
   const [provider, setProvider] = useState("all");
   const [torrentOnly, setTorrentOnly] = useState(false);
 
-  // Toast fora do render
   useEffect(() => {
     if (invalid) toast.error("Não foi possível adquirir uma fonte de stream confiável.");
   }, [invalid]);
 
-  // Filtros derivados da lista 
   const providers = useMemo(() => {
     const names = [...new Set(streams.map((stream) => stream.provider))];
     return names.map((name) => ({ value: name, label: name }));
@@ -49,15 +47,22 @@ const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
 
 
   const selectStream = (stream: Media.Stream) => {
+    if (!stream || !item) return null;
 
-    if (!details) return null;
+    const data: Player.StreamConfig = {
+      id: item.id,
+      stream,
+      media: {
+        item: item,
+        details: details ? details : undefined
+      }
+    }
 
-    navigate("Watch", { streamID: details.tmdbId, streamURL: stream.url ?? "", streamThumbnail: details.background ?? "", mediaData: details })
+    navigate("Watch", data)
   }
 
   return (
     <div className="grid gap-8 p-6 md:grid-cols-[300px_1fr]">
-      {/* Esquerda — metadata + filtros */}
       <div>
         <div className="overflow-hidden rounded-xl ring-1 ring-base-content/10">
           <img
@@ -98,9 +103,8 @@ const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
         </div>
       </div>
 
-      {/* Direita — lista de streams dos addons */}
-      <div className="min-w-0 h-100 overflow-hidden">
-        <div className="mb-4 flex items-baseline justify-between gap-4">
+      <div className="min-w-0 h-100">
+        <div className="mb-4 flex items-baseline gap-4">
           <p className="text-xs font-bold tracking-widest text-base-content/50 uppercase">
             Fontes disponíveis
           </p>
@@ -126,7 +130,7 @@ const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
         )}
 
         {!loading && !error && (
-          <ol className="space-y-3 p-2">
+          <ol className="space-y-3 h-100 overflow-hidden overflow-y-auto p-2">
             {visible.map((stream, index) => (
               <li key={`${stream.provider}-${index}`}>
                 <FocusButton

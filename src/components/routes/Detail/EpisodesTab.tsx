@@ -4,21 +4,36 @@ import useSeason from "../../../hooks/useSeason";
 import { formatDate, formatRuntime } from "../../../utils/format";
 import { FocusButton } from "../../ui/FocusButton";
 import { ErrorAlert } from "../../ui/ErrorAlert";
+import useModals from "../../../hooks/useModals";
 
 
-const EpisodesTab = ({ details, language }: UI.EpisodesTabProps) => {
-  const [seasonNumber, setSeasonNumber] = useState<number | undefined>(details.seasons[0]?.number);
-  const { episodes, loading, error, retry } = useSeason(details.tmdbId, seasonNumber, true);
+const EpisodesTab = ({ media, language }: UI.EpisodesTabProps) => {
+  const { showModal } = useModals();
+  const [seasonNumber, setSeasonNumber] = useState<number | undefined>(media.details?.seasons[0]?.number);
+  const { episodes, loading, error, retry } = useSeason(media.details?.tmdbId, seasonNumber, true);
 
-  if (details.seasons.length === 0) {
+  if (media.details?.seasons.length === 0) {
     return <p className="py-8 text-sm text-base-content/50">Nenhuma temporada disponível.</p>;
+  }
+
+  const handleWatch = (season: number, number: number) => {
+    showModal("StreamSelector", {
+      type: media.item.type,
+      id: media.item.id,
+      item: media.item,
+      details: media.details ?? undefined,
+      episode: {
+        season,
+        number
+      }
+    })
   }
 
   return (
     <div className="grid gap-6 md:grid-cols-[200px_1fr]">
       {/* Temporadas */}
       <nav aria-label="Temporadas" className="flex flex-row gap-2 overflow-x-auto md:flex-col md:overflow-visible">
-        {details.seasons.map((season) => {
+        {media.details?.seasons.map((season) => {
           const active = seasonNumber === season.number;
           return (
             <FocusButton
@@ -26,11 +41,10 @@ const EpisodesTab = ({ details, language }: UI.EpisodesTabProps) => {
               type="button"
               aria-pressed={active}
               onClick={() => setSeasonNumber(season.number)}
-              className={`shrink-0 rounded-lg px-4 py-3 text-left transition-colors md:w-full ${
-                active
-                  ? "bg-primary/15 text-primary"
-                  : "text-base-content/70 hover:bg-base-content/5"
-              }`}
+              className={`shrink-0 rounded-lg px-4 py-3 text-left transition-colors md:w-full ${active
+                ? "bg-primary/15 text-primary"
+                : "text-base-content/70 hover:bg-base-content/5"
+                }`}
             >
               <span className="block text-sm font-semibold">
                 {season.name ?? `Temporada ${season.number}`}
@@ -69,8 +83,9 @@ const EpisodesTab = ({ details, language }: UI.EpisodesTabProps) => {
               <li key={episode.number}>
                 <FocusButton
                   type="button"
-                  title="Player em breve"
+                  title={`Episódio ${episode.number}: ${episode.name ?? ""}`}
                   aria-label={`Episódio ${episode.number}: ${episode.name ?? ""}`}
+                  onClick={() => handleWatch(seasonNumber ?? 1, episode.number)}
                   className="flex w-full gap-4 rounded-xl bg-base-200/60 p-3 text-left ring-1 ring-base-content/5 transition-shadow data-focused:ring-2 data-focused:ring-primary"
                 >
                   <div className="relative h-24 w-44 shrink-0 overflow-hidden rounded-lg bg-base-content/10">

@@ -4,6 +4,7 @@ import { SettingsRow } from "../../../ui/SettingsRow";
 import { SegmentedControl } from "../../../ui/SegmentedControl";
 import { Toggle } from "../../../ui/Toggle";
 import { FocusButton } from "../../../ui/FocusButton";
+import { Input } from "../../../ui/Input";
 
 const LANGUAGE_OPTIONS: UI.SegmentedOption[] = [
   { value: "pt-BR", label: "Português" },
@@ -17,7 +18,6 @@ const QUALITY_OPTIONS: UI.SegmentedOption<AppSettings.Quality>[] = [
   { value: "720p", label: "720p" },
 ];
 
-/** Aba Geral — preferências de reprodução, idioma e sistema. */
 const GeneralTab = () => {
   const { settings, changeSetting } = useSettings();
   const { playback, system } = settings;
@@ -26,6 +26,17 @@ const GeneralTab = () => {
     <>
       <SettingsGroup title="Reprodução">
         <SettingsRow
+          title="Reprodução automática"
+          description="Inicia a reprodução automaticamente ao carregar os dados."
+          control={
+            <Toggle
+              label="Reprodução Automática"
+              checked={playback.autoPlay}
+              onChange={(on) => changeSetting("playback", { autoPlay: on })}
+            />
+          }
+        />
+        <SettingsRow
           title="Legendas automáticas"
           description="Exibe legendas quando disponíveis"
           control={
@@ -33,6 +44,17 @@ const GeneralTab = () => {
               label="Legendas automáticas"
               checked={playback.autoSubtitles}
               onChange={(on) => changeSetting("playback", { autoSubtitles: on })}
+            />
+          }
+        />
+        <SettingsRow
+          title="Próximo episódio automático"
+          description="Assim que um episódio acabar, inicia o próximo automaticamente."
+          control={
+            <Toggle
+              label="Próximo Episódio Automático"
+              checked={playback.autoNextEpisode}
+              onChange={(on) => changeSetting("playback", { autoNextEpisode: on })}
             />
           }
         />
@@ -49,6 +71,29 @@ const GeneralTab = () => {
           }
         />
         <SettingsRow
+          title="Volume Preferencial"
+          description="Inicia a reprodução com o volume desejado."
+          control={
+            <div className="flex w-full max-w-18 items-center gap-2">
+              <Input
+                aria-label="Volume"
+                value={settings.playback.volume}
+                placeholder="100"
+                max={100}
+                min={0}
+                type="number"
+                disabled={false}
+                onChange={(e) => {
+                  let vol = parseInt(e.currentTarget.value);
+                  let volSafe = Math.min(Math.max(vol, 0), 100);
+                  changeSetting("playback", { volume: volSafe });
+                }}
+                className="rounded-lg border border-base-content/15 bg-base-content/5 px-3 py-2 text-sm placeholder:text-base-content/40"
+              />
+            </div>
+          }
+        />
+        <SettingsRow
           title="Pular introduções"
           description="Avança automaticamente créditos de abertura"
           control={
@@ -56,6 +101,17 @@ const GeneralTab = () => {
               label="Pular introduções"
               checked={playback.skipIntros}
               onChange={(on) => changeSetting("playback", { skipIntros: on })}
+            />
+          }
+        />
+        <SettingsRow
+          title="Salvar histórico"
+          description="Salva histórico de onde e quando você parou."
+          control={
+            <Toggle
+              label="Salvar Histórico"
+              checked={playback.saveHistory}
+              onChange={(on) => changeSetting("playback", { saveHistory: on })}
             />
           }
         />

@@ -6,10 +6,7 @@ import GeneralTab from "./tabs/GeneralTab";
 import AppearanceTab from "./tabs/AppearanceTab";
 import AddonsTab from "./tabs/AddonsTab";
 
-/**
- * Registro de abas — para criar uma nova aba: arquivo em ./tabs + entrada aqui.
- * A ordem do array define a ordem exibida.
- */
+
 const TABS: UI.SettingsTab[] = [
   { id: "general", label: "Geral", Icon: Settings2, component: GeneralTab },
   { id: "appearance", label: "Personalização", Icon: Palette, component: AppearanceTab },

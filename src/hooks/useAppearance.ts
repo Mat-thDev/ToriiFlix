@@ -34,4 +34,12 @@ export const posterWidthFor = (density: AppSettings.CardDensity): string =>
 /** Largura do pôster conforme a densidade dos cards — MediaCard, skeletons e cartazes. */
 export const usePosterWidth = (): string => posterWidthFor(useAppearance().cardDensity);
 
+
+/** Largura do backdrop (16:9) por densidade (compacta/confortável). */
+export const backdropWidthFor = (density: AppSettings.CardDensity): string =>
+  density === "compact" ? "w-56 md:w-64 lg:w-72" : "w-64 md:w-72 lg:w-80";
+
+/** Largura do backdrop conforme a densidade dos cards — MediaHorizontalCard e seus skeletons. */
+export const useBackdropWidth = (): string => backdropWidthFor(useAppearance().cardDensity);
+
 export default useAppearance;

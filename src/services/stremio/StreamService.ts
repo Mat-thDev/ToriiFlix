@@ -2,7 +2,9 @@ import { hasResource } from "./resources";
 import { settleOrThrow } from "./settle";
 import { getStreams } from "./StremioClient";
 
-/** Bases dos addons que servem `stream`: externos habilitados (sem seed built-in). */
+export const buildStreamId = (id: string, episode?: Media.EpisodeRef): string =>
+  episode ? `${id}:${episode.season}:${episode.number}` : id;
+
 export const streamSources = (external: Stremio.ExternalAddon[] = []): string[] =>
   external
     .filter((a) => a.enabled && hasResource(a.manifest.resources, "stream"))
@@ -18,9 +20,8 @@ export const toMediaStream = (
   return {
     url: raw.url || undefined,
     infoHash: raw.infoHash || undefined,
-    // Torrent só com infoHash não toca no navegador (DOSSIE pitfall #13)
+    // Torrent só com infoHash não toca no navegador
     torrentOnly: !!raw.infoHash && !raw.url,
-    // No protocolo `name` costuma ser o nome do addon (ex.: "Torrentio")
     provider: raw.name || fallbackProvider,
     title: raw.title || undefined,
   };
@@ -33,12 +34,14 @@ export const listStreams = async (
   id: string,
   options: Media.StreamOptions = {},
 ): Promise<Media.Stream[]> => {
-  const { sources = [], signal } = options;
+  const { sources = [], episode, signal } = options;
   if (sources.length === 0) return [];
+
+  const videoId = buildStreamId(id, episode);
 
   const responses = await settleOrThrow(
     sources.map(async (base) => {
-      const response = await getStreams(base, kind, id, signal);
+      const response = await getStreams(base, kind, videoId, signal);
       const fallbackProvider = new URL(base).hostname;
       return (response.streams ?? [])
         .map((raw) => toMediaStream(raw, fallbackProvider))

@@ -12,10 +12,6 @@ import { PosterSkeleton } from "../../skeletons/PosterSkeleton";
 
 const SKELETON_COUNT = 8;
 
-/**
- * Favoritos/Lista do perfil ativo — resolve a meta de cada id IMDb salvo
- * nos addons habilitados e exibe em grade. Sem favoritos: estado vazio.
- */
 const CatalogueRoute = () => {
   const { favorites } = useFavorites();
   const addons = useAtomValue(addonsAtom);

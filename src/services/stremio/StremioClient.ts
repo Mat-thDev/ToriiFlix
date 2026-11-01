@@ -1,20 +1,3 @@
-/**
- * Cliente do Stremio Addon Protocol — puro, sem React (a UI nunca
- * fala HTTP de addon direto; ver DOSSIE §4).
- *
- * Endpoints do protocolo:
- *   /manifest.json
- *   /catalog/{type}/{id}({extra}).json
- *   /meta/{type}/{id}.json
- *   /stream/{type}/{id}.json
- *
- * Formato oficial dos extras (stremio-addon-sdk docs/protocol.md):
- * segmento de path com query-string serializada —
- *   /catalog/movie/top/genre=Action&skip=0.json
- * Sem parênteses, sem `?`. Extras fora desse formato são ignorados
- * silenciosamente pelo addon (verificado em v3-cinemeta.strem.io).
- */
-
 const ALLOWED_PROTOCOL = /^https?:\/\//i;
 const REQUEST_TIMEOUT_MS = 12_000;
 
@@ -41,6 +24,9 @@ const encodeExtra = (extra: Stremio.Extra): string =>
   Object.entries(extra)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join("&");
+
+const encodeVideoId = (id: string): string =>
+  encodeURIComponent(id).replace(/%3A/gi, ":");
 
 const fetchJson = async <T>(url: string, external?: AbortSignal): Promise<T> => {
   if (!ALLOWED_PROTOCOL.test(url)) {
@@ -106,6 +92,6 @@ export const getStreams = (
   signal?: AbortSignal,
 ): Promise<Stremio.StreamResponse> =>
   fetchJson<Stremio.StreamResponse>(
-    buildUrl(base, `stream/${encodeURIComponent(type)}/${encodeURIComponent(id)}.json`),
+    buildUrl(base, `stream/${encodeURIComponent(type)}/${encodeVideoId(id)}.json`),
     signal,
   );

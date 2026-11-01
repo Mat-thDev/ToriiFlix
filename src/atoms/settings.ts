@@ -1,11 +1,14 @@
 import { atomWithStorage } from "jotai/utils";
 
-/** Valores padrão — usados no primeiro boot e em chaves corrompidas do storage. */
 export const DEFAULT_SETTINGS: AppSettings.Settings = {
     playback: {
         autoSubtitles: true,
         maxQuality: "auto",
         skipIntros: false,
+        volume: 50,
+        autoPlay: true,
+        saveHistory: true,
+        autoNextEpisode: false
     },
     appearance: {
         theme: "torii",
@@ -19,15 +22,11 @@ export const DEFAULT_SETTINGS: AppSettings.Settings = {
         startWithSystem: false,
     },
     addons: {
-        tmdbApiKey: ""
+        tmdbApiKey: "",
+        torboxApiKey: "",
     }
 };
 
-/**
- * Configurações persistidas em localStorage por seção.
- * O getItem mescla o payload salvo com os defaults: settings novas ganham
- * valor padrão para usuários com storage antigo.
- */
 export const settingsAtom = atomWithStorage<AppSettings.Settings>("settings", DEFAULT_SETTINGS, {
     getItem: (key) => {
         const raw = window.localStorage.getItem(key);

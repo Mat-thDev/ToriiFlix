@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   BufferingIndicator,
   Container,
@@ -9,35 +9,63 @@ import {
 } from "@videojs/react";
 import { Video, VideoPlayer } from "@videojs/react/video";
 
-import BackButton from "./BackButton";
+import BackButton from "./controls/BackButton";
 import MediaState from "./MediaState";
-import PlayButton from "./PlayButton";
-import PlayerControls from "./PlayerControls";
-import PlayerRow from "./PlayerRow";
-import SkipButton from "./SkipButton";
-import VolumeBar from "./VolumeBar";
+import PlayButton from "./controls/PlayButton";
+import PlayerControls from "./controls/PlayerControls";
+import PlayerRow from "./controls/PlayerRow";
+import SkipButton from "./controls/SkipButton";
+import VolumeBar from "./controls/VolumeBar";
 import useNavigation from "../../hooks/useNavigation";
 import { toast } from "react-toastify";
-import SeekBar from "./SeekBar";
+import SeekBar from "./controls/SeekBar";
+import useSettings from "../../hooks/useSettings";
+import MediaController from "./MediaController";
 
 
-const ToriiPlayer = ({ streamURL, streamThumbnail, streamID, mediaData }: Player.StreamConfig) => {
+const ToriiPlayer = () => {
+  const { settings } = useSettings()
+  const { currentPage, currentProps, goBack } = useNavigation();
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const { goBack } = useNavigation()
+  const streamConfig = currentProps as Player.StreamConfig
 
-  if (!streamURL || !streamID) {
-    toast.error("Falha ao inicializar o reprodutor.");
-    goBack();
-  };
+  useEffect(() => {
+    if ((!streamConfig.stream || !streamConfig.id) && currentPage === "Watch") {
+      toast.error("Falha ao inicializar o reprodutor.");
+      goBack();
+    }
+  }, [streamConfig, goBack]);
+
+  if (!streamConfig || !streamConfig.stream || !streamConfig.id) {
+    return null;
+  }
+
+  const { id, stream, media } = streamConfig;
 
   return (
-    <VideoPlayer poster={streamThumbnail}>
+    <VideoPlayer
+      key={id}
+    >
       <Container className="fixed inset-0 z-60 h-dvh w-screen overflow-hidden bg-base-300 has-[&_[data-controls]:not([data-visible])]:cursor-none [&>video]:size-full [&>video]:object-contain [&>video]:bg-black">
+        <MediaController playbackSettings={settings.playback} streamConfig={streamConfig} />
+        {!isPlaying && media.item.background && (
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-300"
+            style={{ backgroundImage: `url(${media.item.background})` }}
+          >
+            <div className="absolute inset-0 bg-black/20" />
+          </div>
+        )}
+
         <Suspense fallback={null}>
           <Video
-            src={streamURL}
-            autoPlay={false}
+            src={stream.url}
+            autoPlay={settings.playback.autoPlay}
             playsInline
+            onPlay={() => {
+              setIsPlaying(true);
+            }}
           />
         </Suspense>
 
@@ -63,16 +91,16 @@ const ToriiPlayer = ({ streamURL, streamThumbnail, streamID, mediaData }: Player
         <PlayerControls>
           <PlayerRow top>
             <BackButton onClick={goBack} />
-            <MediaState mediaData={mediaData} />
+            <MediaState mediaData={media} />
           </PlayerRow>
 
           <PlayerRow bottom>
-            <SeekBar mediaData={mediaData} />
+            <SeekBar playbackSettings={settings.playback} />
             <div className="pointer-events-auto flex w-full items-center gap-2">
               <SkipButton time={-15} />
               <PlayButton />
               <SkipButton time={15} />
-              <VolumeBar />
+              <VolumeBar playbackSettings={settings.playback} />
             </div>
           </PlayerRow>
         </PlayerControls>

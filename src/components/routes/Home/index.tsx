@@ -27,10 +27,8 @@ const HomeRoute = () => {
     navigate("Detail", { id: item.id, type: item.type });
   };
 
-  // Primeiro destaque com imagem de fundo (fallback: primeiro item)
-  const featured = page?.items.find((item) => item.background) ?? page?.items[0] ?? null;
+  const featured = page?.items[Math.floor(Math.random() * page.items.length - 1)];
 
-  // Seções exclusivas dos addons habilitados — entram após as 2 primeiras curadas
   const addonSections = useMemo(() => externalCatalogSections(addons), [addons]);
   const sections: { key: string; props: UI.MediaSectionProps }[] = [
     ...HOME_SECTIONS.slice(0, 2).map((props, i) => ({ key: `curated-${i}`, props })),

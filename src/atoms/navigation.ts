@@ -1,7 +1,6 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-/** Pilha de navegação — página atual + histórico (máx. 15 entradas). */
-export const navigationAtom = atom<Nav.NavState>({
+export const navigationAtom = atomWithStorage<Nav.NavState>("nav", {
   current: { page: "Home" },
   stack: [],
 });

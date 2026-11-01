@@ -17,7 +17,6 @@ const NAV_ITEMS: UI.NavItem[] = [
   { id: "Channels", label: "Guia de TV", Icon: Grid2x2 },
 ];
 
-/** Estilo único do item da barra — ativo, inerte e destrutivo (Sair). */
 const itemClass = (variant: "active" | "idle" | "danger") =>
   clsx(
     "flex h-12 w-12 items-center justify-center rounded-xl transition-colors",
@@ -26,11 +25,6 @@ const itemClass = (variant: "active" | "idle" | "danger") =>
     variant === "danger" && "text-base-content/40 hover:bg-error/15 hover:text-error",
   );
 
-/**
- * Barra lateral — modo `always` fixa na coluna do grid; modo `focus` vira
- * overlay que desliza da esquerda quando o foco/hover chega nela (e volta
- * a esconder quando sai). Animação via framer-motion + useAppTransition.
- */
 const Sidebar = () => {
   const { currentPage, navigate } = useNavigation();
   const { activeProfile, openSwitcher } = useProfile();

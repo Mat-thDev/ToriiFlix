@@ -1,28 +1,20 @@
-/**
- * Tipagens das configurações do app (persistidas via useSettings).
- * Uso: `AppSettings.Settings`, `AppSettings.Theme`, ...
- */
 declare namespace AppSettings {
-  /** Temas visuais disponíveis (ver src/styles/themes). */
   type Theme = "torii" | "torii-cinema" | "torii-ember" | "torii-ink" | "torii-noir";
 
-  /** Limite de resolução dos streams. */
   type Quality = "auto" | "1080p" | "720p";
-
-  /** Tamanho das capas no catálogo. */
   type CardDensity = "compact" | "comfortable";
-
-  /** Quando a barra lateral aparece. */
   type SidebarMode = "always" | "focus";
 
-  /** Preferências de reprodução. */
   interface Playback {
     autoSubtitles: boolean;
     maxQuality: Quality;
+    volume: number;
     skipIntros: boolean;
+    autoPlay: boolean;
+    saveHistory: boolean;
+    autoNextEpisode: boolean;
   }
 
-  /** Aparência e layout. */
   interface Appearance {
     theme: Theme;
     animations: boolean;
@@ -31,7 +23,6 @@ declare namespace AppSettings {
     windowControls: boolean;
   }
 
-  /** Configurações gerais de sistema. */
   interface System {
     language: string;
     startWithSystem: boolean;
@@ -39,9 +30,9 @@ declare namespace AppSettings {
 
   interface Addons {
     tmdbApiKey?: string
+    torboxApiKey?: string
   }
 
-  /** Raiz das configurações — cada seção é um subgroupo persistido. */
   interface Settings {
     playback: Playback;
     appearance: Appearance;
@@ -49,6 +40,5 @@ declare namespace AppSettings {
     addons: Addons
   }
 
-  /** Nome de uma seção (chave da raiz). */
   type Section = keyof Settings;
 }
