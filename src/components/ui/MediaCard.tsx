@@ -5,15 +5,7 @@ import { FocusButton } from "./FocusButton";
 import { FavoriteButton } from "./FavoriteButton";
 import { usePosterWidth } from "../../hooks/useAppearance";
 
-/**
- * Card de pôster das linhas de catálogo (estilo Netflix/Crunchyroll).
- * `<button>` para ser alcançável pela navegação espacial (remote/setas).
- * O favoritar é um overlay no canto do pôster (fora do `<button>` do card,
- * irmão no DOM). A seta ↓ abre o overlay e a ↑ volta pro card via
- * onArrowPress + setFocus — a geometria default do norigin ignoraria um
- * botão dentro do retângulo do card. Revelação: hover, foco ou salvo.
- * Largura vem da densidade das settings (useAppearance).
- */
+
 const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => {
   const posterWidth = usePosterWidth();
   const uid = useId().replace(/:/g, "");

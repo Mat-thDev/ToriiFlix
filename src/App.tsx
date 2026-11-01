@@ -71,7 +71,7 @@ const App = () => {
             transition={transition}
           >
             <FocusSection autoFocus>
-              {renderRoute("Watch", currentProps)}
+              {renderRoute(currentPage, currentProps)}
             </FocusSection>
           </motion.div>
         </AnimatePresence>

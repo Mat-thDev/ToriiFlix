@@ -11,7 +11,7 @@ declare namespace Nav {
     History: undefined;
     Channels: undefined;
     Settings: undefined;
-    Watch: undefined;
+    Watch: UI.WatchProps;
   }
 
   interface RouteState {

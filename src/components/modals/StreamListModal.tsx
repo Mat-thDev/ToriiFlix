@@ -8,6 +8,7 @@ import { FocusButton } from "../ui/FocusButton";
 import { ErrorAlert } from "../ui/ErrorAlert";
 import { SegmentedControl } from "../ui/SegmentedControl";
 import { Toggle } from "../ui/Toggle";
+import useNavigation from "../../hooks/useNavigation";
 
 type StreamSelectorProps = Modals.PropsMap["StreamSelector"];
 
@@ -15,6 +16,7 @@ type StreamSelectorProps = Modals.PropsMap["StreamSelector"];
 const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
   const invalid = !type || !id;
   const { streams, loading, error, retry } = useStreams(type, id);
+  const { navigate } = useNavigation()
 
   const [provider, setProvider] = useState("all");
   const [torrentOnly, setTorrentOnly] = useState(false);
@@ -46,7 +48,12 @@ const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
   ].filter(Boolean);
 
 
-  console.log(streams);
+  const selectStream = (stream: Media.Stream) => {
+
+    if (!details) return null;
+
+    navigate("Watch", { streamID: details.tmdbId, streamURL: stream.url ?? "", streamThumbnail: details.background ?? "", mediaData: details })
+  }
 
   return (
     <div className="grid gap-8 p-6 md:grid-cols-[300px_1fr]">
@@ -124,7 +131,8 @@ const StreamListModal = ({ type, id, item, details }: StreamSelectorProps) => {
               <li key={`${stream.provider}-${index}`}>
                 <FocusButton
                   type="button"
-                  title="Player em breve"
+                  title="Reproduzir"
+                  onClick={() => selectStream(stream)}
                   aria-label={`Reproduzir via ${stream.provider}`}
                   className="flex w-full items-center gap-4 rounded-xl bg-base-200/60 p-3 text-left ring-1 ring-base-content/5 transition-shadow data-focused:ring-2 data-focused:ring-primary"
                 >

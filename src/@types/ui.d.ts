@@ -64,7 +64,7 @@ declare namespace UI {
   }
 
   /** Props do campo de entrada (display de busca). */
-  interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+  interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
   /** Switch focável (navegação espacial). Com `checked` vira controlado. */
   interface ToggleProps {
@@ -178,6 +178,8 @@ declare namespace UI {
     id?: string;
     type?: Media.Kind;
   }
+
+  interface WatchProps extends Player.StreamConfig { };
 
   /** Props do teclado na tela (busca e editor de perfil). */
   interface KeyboardProps {

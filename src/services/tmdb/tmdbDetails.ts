@@ -1,43 +1,32 @@
 import { TMDBService, regionForLanguage, tmdbImage } from "./tmdbService";
 
-/** Opções do enriquecimento — idioma vem do `settings.system.language`. */
 export interface EnrichOptions {
   apiKey: string;
   language: string;
   signal?: AbortSignal;
 }
 
-/** Quantos itens por lista entram no detalhe (cast, relacionados, backdrops). */
 const CAST_LIMIT = 6;
 const RELATED_LIMIT = 12;
 const BACKDROP_LIMIT = 8;
 
-/** Ofertas preferidas p/ "onde assistir": assinatura > compra > aluguel > ads > free. */
 const pickProviders = (region: TMDB.WatchProviderRegion | undefined): TMDB.WatchProviderEntry[] =>
   region?.flatrate?.length ? region.flatrate
-  : region?.buy?.length ? region.buy
-  : region?.rent?.length ? region.rent
-  : region?.ads?.length ? region.ads
-  : region?.free ?? [];
+    : region?.buy?.length ? region.buy
+      : region?.rent?.length ? region.rent
+        : region?.ads?.length ? region.ads
+          : region?.free ?? [];
 
-/** Ano de `release_date`/`first_air_date` ("2024-05-12" → "2024"). */
 const yearOf = (date?: string): string | undefined => (date ? date.slice(0, 4) : undefined);
 
-/** Gêneros TMDB localizados; fallback para os do addon. */
 const genreNames = (genres?: TMDB.Genre[], fallback?: string[]): string[] | undefined => {
   const names = genres?.map((g) => g.name).filter(Boolean);
   return names && names.length > 0 ? names : fallback;
 };
 
-/** Título/sinopse do TMDB no idioma pedido; fallback p/ o valor do addon. */
 const pickLocalized = (value: string | undefined, fallback?: string): string | undefined =>
   value && value.trim() ? value.trim() : fallback;
 
-/**
- * Ponte Addons → TMDB: recebe o `Media.Item` vindo do Cinemeta/externo,
- * localiza pelo idioma das settings e devolve `Media.Details` mesclado.
- * Sem API key, id não-IMDb ou falha → `null` (a UI mantém o Item original).
- */
 export const enrichMediaDetails = async (
   item: Media.Item,
   options: EnrichOptions,
@@ -70,7 +59,6 @@ export const enrichMediaDetails = async (
   }
 };
 
-/** Movie | TV → `Media.Details` (TMDB localizado primeiro, addon como fallback). */
 const mergeDetails = (
   item: Media.Item,
   raw: TMDB.DetailsResult,
@@ -90,7 +78,7 @@ const mergeDetails = (
   const related = (raw.recommendations?.results ?? []).slice(0, RELATED_LIMIT);
 
   return {
-    // Base do addon (id/navegação/tipo) + localização TMDB por cima
+    // Base do addon + localização TMDB
     ...item,
     tmdbId: raw.id,
     name: pickLocalized(localizedTitle, item.name) as string,
@@ -136,13 +124,13 @@ const mergeDetails = (
     seasons: isMovie
       ? []
       : (raw.seasons ?? [])
-          .filter((s) => s.season_number > 0)
-          .map((s) => ({
-            number: s.season_number,
-            name: s.name || undefined,
-            episodeCount: s.episode_count,
-            airDate: s.air_date ?? undefined,
-          })),
+        .filter((s) => s.season_number > 0)
+        .map((s) => ({
+          number: s.season_number,
+          name: s.name || undefined,
+          episodeCount: s.episode_count,
+          airDate: s.air_date ?? undefined,
+        })),
     episodeCount: "number_of_episodes" in raw ? raw.number_of_episodes : undefined,
 
     related: related.map((r) => ({
@@ -155,10 +143,7 @@ const mergeDetails = (
   };
 };
 
-/**
- * Converte um id TMDB de relacionado em id IMDb (formato que os addons
- * entendem) — chamada lazy, só no clique.
- */
+
 export const resolveImdbId = async (
   kind: Media.Kind,
   tmdbId: number,
@@ -176,7 +161,7 @@ export const resolveImdbId = async (
   }
 };
 
-/** Episódios de uma temporada (lazy ao escolher a temporada). Erros propagam p/ o hook. */
+/** Episódios de uma temporada */
 export const getSeasonEpisodes = async (
   tmdbId: number,
   seasonNumber: number,

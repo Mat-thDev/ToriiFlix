@@ -13,14 +13,6 @@ const INITIAL_STATE: Hooks.MediaState = {
   detailsLoading: false,
 };
 
-/**
- * Meta de um item (movie/series) nos addons habilitados, com loading/erro/retry.
- * Mesmo padrão do useCatalog: abort no unmount, erros pós-abort ignorados.
- *
- * Segunda fase: com a API key do TMDB configurada, enriquece o Item com
- * `Media.Details` localizado no `settings.system.language` — a tela renderiza
- * o Item do addon antes e completa depois (TMDB nunca bloqueia nem quebra).
- */
 const useMedia = (kind: Media.Kind | undefined, id: string | undefined) => {
   const addons = useAtomValue(addonsAtom);
   const settings = useAtomValue(settingsAtom);
@@ -57,7 +49,7 @@ const useMedia = (kind: Media.Kind | undefined, id: string | undefined) => {
     return () => controller.abort();
   }, [kind, id, sources, attempt]);
 
-  // Fase 2 — enriquecimento TMDB (roda depois que o Item do addon chegou)
+  // TMDB
   const { item } = state;
   useEffect(() => {
     if (!item) return;
