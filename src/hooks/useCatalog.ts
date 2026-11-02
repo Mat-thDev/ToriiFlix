@@ -5,7 +5,7 @@ import { catalogSources, listCatalog } from "../services/stremio/CatalogService"
 
 
 const useCatalog = (kind: Media.Kind, params: Hooks.CatalogParams = {}) => {
-  const { list = "top", genre, limit = 30, sources: paramSources } = params;
+  const { list, genre, limit = 30, sources: paramSources } = params;
   const addons = useAtomValue(addonsAtom);
   const addonSources = useMemo(() => catalogSources(addons, kind), [addons, kind]);
   const sources = paramSources ?? addonSources;
@@ -20,7 +20,7 @@ const useCatalog = (kind: Media.Kind, params: Hooks.CatalogParams = {}) => {
     const controller = new AbortController();
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    listCatalog(kind, { list, genre, limit, sources, signal: controller.signal })
+    listCatalog(kind, { list, genre, limit, sources, external: addons, signal: controller.signal })
       .then((page) => {
         if (!controller.signal.aborted) setState({ page, loading: false, error: null });
       })
@@ -34,7 +34,7 @@ const useCatalog = (kind: Media.Kind, params: Hooks.CatalogParams = {}) => {
       });
 
     return () => controller.abort();
-  }, [kind, list, genre, limit, sources, attempt]);
+  }, [kind, list, genre, limit, sources, addons, attempt]);
 
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 

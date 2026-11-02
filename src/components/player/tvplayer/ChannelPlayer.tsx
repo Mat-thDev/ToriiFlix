@@ -1,18 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Hotkey } from "@videojs/react";
 import { TvMinimalPlay } from "lucide-react";
-import PlayerSurface from "./PlayerSurface";
+import { useAutoHide } from "../../../hooks/useAutoHide";
+import useChannelStream from "../../../hooks/useChannelStream";
+import PlayerSurface from "../PlayerSurface";
 import ChannelRail from "./ChannelRail";
-import { useAutoHide } from "../../hooks/useAutoHide";
-import useChannelStream from "../../hooks/useChannelStream";
 
 
-const ChannelPlayer = ({ channels }: { channels: Media.Item[] }) => {
+const ChannelPlayer = ({
+    channels,
+    loading,
+    addons = [],
+    selectedAddonUrl,
+    onSelectAddon,
+}: Player.ChannelPlayerProps) => {
     const [selectedId, setSelectedId] = useState<string>();
+    const [selectedGenre, setSelectedGenre] = useState<string>();
+
     const activeId = selectedId ?? channels[0]?.id;
-    // Tipo real do canal ativo ("channel" ou "tv") — a stream deve usar o
-    // mesmo tipo que o addon declarou no catálogo.
     const activeKind = channels.find((c) => c.id === activeId)?.type ?? "channel";
+
+    const handleSelect = useCallback((channel: Media.Item) => setSelectedId(channel.id), []);
 
     const { visible, poke } = useAutoHide();
     const { stream, unavailable, retry } = useChannelStream(activeId, activeKind);
@@ -25,6 +33,10 @@ const ChannelPlayer = ({ channels }: { channels: Media.Item[] }) => {
             window.removeEventListener("pointermove", poke);
         };
     }, [poke]);
+
+    const availableGenres = Array.from(
+        new Set(channels.flatMap((c) => c.genres || []))
+    ).filter(Boolean);
 
     return (
         <PlayerSurface
@@ -39,9 +51,16 @@ const ChannelPlayer = ({ channels }: { channels: Media.Item[] }) => {
             <ChannelRail
                 channels={channels}
                 selectedId={activeId}
-                onSelect={(channel) => setSelectedId(channel.id)}
+                onSelect={handleSelect}
                 visible={visible}
                 onActivity={poke}
+                loading={loading}
+                addons={addons}
+                selectedAddonUrl={selectedAddonUrl}
+                onSelectAddon={onSelectAddon}
+                selectedGenre={selectedGenre}
+                onSelectGenre={setSelectedGenre}
+                availableGenres={availableGenres}
             />
 
             {unavailable && (

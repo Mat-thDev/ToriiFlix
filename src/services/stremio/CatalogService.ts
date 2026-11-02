@@ -14,7 +14,7 @@ export const catalogSources = (
   external: Stremio.ExternalAddon[] = [],
   kind?: Media.Kind,
 ): string[] => {
-  // Cinemeta não serve catálogo de canal — builtin só nos kinds de filme/série
+
   const builtin = !kind || !isChannelLike(kind) ? DEFAULT_SOURCES : [];
 
   const addons = external
@@ -29,7 +29,7 @@ export const catalogSources = (
   return [...builtin, ...addons];
 };
 
-/** Bruto (Stremio) -> contrato da UI (Media). Inválido retorna null. */
+
 export const toMediaItem = (raw: Stremio.Meta): Media.Item | null => {
   const id = raw._id || raw.id;
   if (!isKind(raw.type) || !id || !raw.name) return null;
@@ -71,26 +71,67 @@ const mergeItems = (batches: Media.Item[][], limit: number): Media.Item[] => {
   return items;
 };
 
-/** Lista um catálogo em todos os addons informados (filmes ou séries). */
+/** Ids de catálogo do addon que casam com o kind (alias channel/tv), sem repetir. */
+const addonCatalogIds = (addon: Stremio.ExternalAddon, kind: Media.Kind): string[] => [
+  ...new Set(
+    (addon.manifest.catalogs ?? [])
+      .filter((catalog) => matchesKind(catalog.type, kind))
+      .map((catalog) => catalog.id),
+  ),
+];
+
 export const listCatalog = async (
   kind: Media.Kind,
   options: Media.CatalogOptions = {},
 ): Promise<Media.Page> => {
-  const { list = "top", genre, limit = 20, sources = DEFAULT_SOURCES, signal } = options;
+  const { list, genre, limit = 20, sources = DEFAULT_SOURCES, external = [], signal } = options;
 
   const extra: Stremio.Extra = {};
   if (genre) extra.genre = genre;
+
+
+  const idsFor = (base: string): string[] => {
+    if (list) return [list];
+    const addon = external.find((a) => a.url === base);
+    const ids = addon ? addonCatalogIds(addon, kind) : [];
+    return ids.length > 0 ? ids : ["top"];
+  };
 
   // Canal: pedir os dois nomes de tipo por fonte (addon declara "channel" ou "tv");
   // o 404 do tipo errado é descartado pelo settleOrThrow.
   const responses = await settleOrThrow(
     sources.flatMap((base) =>
-      kindVariants(kind).map((type) => getCatalog(base, type, list, extra, signal)),
+      kindVariants(kind).flatMap((type) =>
+        idsFor(base).map((id) => getCatalog(base, type, id, extra, signal)),
+      ),
     ),
   );
 
   return { items: mergeItems(responses.map(toItems), limit) };
 };
+export const channelCatalogSections = async (external: Stremio.ExternalAddon[]): Promise<Media.ChannelCatalogGroup[]> => {
+  const groups: Media.ChannelCatalogGroup[] = [];
+
+  for (const addon of external) {
+    if (!addon.enabled || !hasResource(addon.manifest.resources, "catalog")) continue;
+
+    for (const catalog of addon.manifest.catalogs || []) {
+      if (!isChannelLike(catalog.type)) continue;
+
+      let genres = catalog.genres;
+
+      groups.push({
+        addonId: addon.manifest.id,
+        addonName: addon.manifest.name,
+        baseUrl: addon.url,
+        catalogId: catalog.id,
+        catalogName: catalog.name || catalog.id,
+        genres: genres
+      })
+    }
+  }
+  return groups;
+}
 
 /** Detalhe de um item (movie/series). */
 export const getMedia = async (

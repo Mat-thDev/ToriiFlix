@@ -239,4 +239,12 @@ declare namespace UI {
     details: Media.Details;
     onSelect: (related: Media.Related) => void;
   }
+
+  interface ChannelRowProps {
+    channel: Media.Item;
+    index: number;
+    playing: boolean;
+    onSelect: (channel: Media.Item) => void;
+    onActivity?: () => void;
+  };
 }

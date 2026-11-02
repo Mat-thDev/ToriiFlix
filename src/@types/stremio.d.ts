@@ -59,7 +59,7 @@ declare namespace Stremio {
     version: string;
     resources: string[] | { name: string; type?: string[] }[];
     types: string[];
-    catalogs: { type: string; id: string; name?: string }[];
+    catalogs: { type: string; id: string; name?: string, genres?: string[] }[];
     idPrefixes?: string[];
     behaviorHints?: Record<string, unknown>;
   }

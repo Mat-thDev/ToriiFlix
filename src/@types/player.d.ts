@@ -9,12 +9,27 @@ declare namespace Player {
     children?: React.ReactNode
   }
 
-  type ChannelRailProps = {
+  interface ChannelPlayerProps {
+    channels: Media.Item[];
+    loading?: boolean;
+    addons?: Stremio.ExternalAddon[];
+    selectedAddonUrl?: string;
+    onSelectAddon?: (url: string) => void;
+  }
+
+  interface ChannelRailProps {
     channels: Media.Item[];
     selectedId?: string;
     onSelect: (channel: Media.Item) => void;
     visible: boolean;
     onActivity?: () => void;
+    loading?: boolean;
+    addons?: Stremio.ExternalAddon[];
+    selectedAddonUrl?: string;
+    onSelectAddon?: (url: string) => void;
+    selectedGenre?: string;
+    onSelectGenre?: (genre: string | undefined) => void;
+    availableGenres?: string[];
   };
 
   interface MediaPayload {

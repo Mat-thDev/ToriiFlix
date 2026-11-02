@@ -134,6 +134,12 @@ declare namespace Media {
     limit?: number;
     /** Bases dos addons consultados (ver `catalogSources`); default: todos os habilitados com `catalog`. */
     sources?: string[];
+    /**
+     * Addons externos com manifest — usado para resolver o id do catálogo
+     * (`manifest.catalogs`) quando `list` é omitido. Sem `list` e sem
+     * `external`, cai no fallback "top".
+     */
+    external?: Stremio.ExternalAddon[];
     signal?: AbortSignal;
   }
 
@@ -186,5 +192,14 @@ declare namespace Media {
     duration: number;
     watched: boolean
     timestamp: string;
+  }
+
+  interface ChannelCatalogGroup {
+    addonId: string;
+    addonName: string;
+    baseUrl: string;
+    catalogId: string;
+    catalogName: string;
+    genres?: string[];
   }
 }
