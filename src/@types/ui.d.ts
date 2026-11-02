@@ -134,6 +134,8 @@ declare namespace UI {
   }
 
   interface MediaHorizontalCardProps extends MediaCardProps {
+    /** Linha extra sob o título (ex.: "T1 · E2 — Nome" no histórico). */
+    subtitle?: string;
     watchProgress?: {
       watchedTime: number
       duration: number;

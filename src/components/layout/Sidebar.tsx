@@ -1,7 +1,7 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { Bookmark, Grid2x2, History, Home, Power, Search, Settings } from "lucide-react";
+import { Bookmark, History, Home, Power, Search, Settings, Tv } from "lucide-react";
 import useNavigation from "../../hooks/useNavigation";
 import useProfile from "../../hooks/useProfile";
 import useAppearance, { useAppTransition } from "../../hooks/useAppearance";
@@ -14,7 +14,7 @@ const NAV_ITEMS: UI.NavItem[] = [
   { id: "Home", label: "Início", Icon: Home },
   { id: "History", label: "Histórico", Icon: History },
   { id: "Catalogue", label: "Favoritos", Icon: Bookmark },
-  { id: "Channels", label: "Guia de TV", Icon: Grid2x2 },
+  { id: "Channels", label: "Guia de TV", Icon: Tv },
 ];
 
 const itemClass = (variant: "active" | "idle" | "danger") =>

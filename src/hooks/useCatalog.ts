@@ -3,15 +3,11 @@ import { useAtomValue } from "jotai";
 import { addonsAtom } from "../atoms/addons";
 import { catalogSources, listCatalog } from "../services/stremio/CatalogService";
 
-/**
- * Catálogo dos addons habilitados (built-in + externos com `catalog`)
- * com loading/erro/retry. Abort no unmount (erros pós-abort sao ignorados).
- * Sem cache entre consumidores — reintroduzir react-query com 2o consumidor.
- */
+
 const useCatalog = (kind: Media.Kind, params: Hooks.CatalogParams = {}) => {
   const { list = "top", genre, limit = 30, sources: paramSources } = params;
   const addons = useAtomValue(addonsAtom);
-  const addonSources = useMemo(() => catalogSources(addons), [addons]);
+  const addonSources = useMemo(() => catalogSources(addons, kind), [addons, kind]);
   const sources = paramSources ?? addonSources;
   const [state, setState] = useState<Hooks.CatalogState>({
     page: null,

@@ -12,7 +12,7 @@ const INITIAL_STATE: Hooks.StreamsState = {
 
 const useStreams = (kind: Media.Kind | undefined, id: string | undefined, episode?: Media.EpisodeRef) => {
   const addons = useAtomValue(addonsAtom);
-  const sources = useMemo(() => streamSources(addons), [addons]);
+  const sources = useMemo(() => streamSources(addons, kind), [addons, kind]);
   const [state, setState] = useState<Hooks.StreamsState>(INITIAL_STATE);
   const [attempt, setAttempt] = useState(0);
 

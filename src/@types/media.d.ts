@@ -4,7 +4,7 @@
  */
 declare namespace Media {
   /** Tipo de conteúdo. */
-  type Kind = "movie" | "series";
+  type Kind = "movie" | "series" | "tv" | "channel";
 
   /** Item de catálogo/detalhe já mapeado. */
   interface Item {
@@ -153,6 +153,8 @@ declare namespace Media {
   interface EpisodeRef {
     season: number;
     number: number;
+    /** Nome do episódio — apenas exibição (histórico/UI), não usado nas requests. */
+    name?: string;
   }
 
   /** Opções de leitura de streams de um item. */
@@ -178,6 +180,8 @@ declare namespace Media {
   interface MediaHistory {
     id: string | number;
     media: Media.Item;
+    /** Presente quando a entrada é de um episódio (séries) — uma entrada por episódio. */
+    episode?: Media.EpisodeRef;
     watchedTime: number;
     duration: number;
     watched: boolean

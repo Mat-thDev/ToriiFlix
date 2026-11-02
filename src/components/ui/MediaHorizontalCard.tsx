@@ -5,7 +5,8 @@ import { useBackdropWidth } from "../../hooks/useAppearance";
 import FavoriteButton from "./FavoriteButton";
 import { FocusButton } from "./FocusButton";
 
-const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizontalCardProps) => {
+
+const MediaHorizontalCard = ({ item, onSelect, watchProgress, subtitle }: UI.MediaHorizontalCardProps) => {
 
     const backdropWidth = useBackdropWidth();
     const uid = useId().replace(/:/g, "");
@@ -22,6 +23,8 @@ const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizont
                 : 0
         : 0;
 
+    const image = item.background ?? item.poster;
+
     return (
         <div className={`group/card relative shrink-0 p-2 ${backdropWidth}`}>
             <FocusButton
@@ -37,13 +40,13 @@ const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizont
                 onFocus={() => setCardFocused(true)}
                 onBlur={() => setCardFocused(false)}
                 onClick={() => onSelect?.(item)}
-                aria-label={`${item.name}${item.year ? ` (${item.year})` : ""}`}
+                aria-label={`${item.name}${item.year ? ` (${item.year})` : ""}${subtitle ? ` — ${subtitle}` : ""}`}
                 className="group block w-full text-left"
             >
                 <div className="relative aspect-video overflow-hidden rounded-xl bg-base-200 ring-1 ring-base-content/10 transition-shadow duration-200 group-hover:ring-2 group-hover:ring-primary group-data-focused:ring-2 group-data-focused:ring-primary">
-                    {item.poster ? (
+                    {image ? (
                         <img
-                            src={item.background}
+                            src={image}
                             alt=""
                             loading="lazy"
                             decoding="async"
@@ -66,9 +69,12 @@ const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizont
                     )}
 
                     {watched && (
-                        <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-base-100/85 px-2 py-0.5 text-xs font-bold text-success backdrop-blur-sm">
-                            <Check className="size-3" aria-hidden="true" />
-                            Assistido
+                        <span
+                            title="Assistido"
+                            aria-label="Assistido"
+                            className="absolute bottom-2.5 left-2 flex size-6 items-center justify-center rounded-full bg-black/55 text-success ring-1 ring-white/10 backdrop-blur-sm"
+                        >
+                            <Check className="size-3.5" aria-hidden="true" />
                         </span>
                     )}
 
@@ -78,7 +84,8 @@ const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizont
                             aria-valuemin={0}
                             aria-valuemax={100}
                             aria-valuenow={Math.round(progressPercent)}
-                            className="absolute inset-x-0 bottom-0 h-1 bg-base-content/25"
+                            aria-label="Progresso"
+                            className="absolute inset-x-0 bottom-0 h-1 bg-black/40"
                         >
                             <div
                                 className={`h-full ${watched ? "bg-success" : "bg-primary"}`}
@@ -90,7 +97,17 @@ const MediaHorizontalCard = ({ item, onSelect, watchProgress }: UI.MediaHorizont
 
                 <p className="mt-2 line-clamp-1 text-sm leading-snug font-semibold">{item.name}</p>
 
-                {item.year && <p className="mt-0.5 text-xs text-base-content/55">{item.year}</p>}
+                {(subtitle || item.year) && (
+                    <p className="mt-0.5 flex items-center gap-1.5 text-xs leading-snug text-base-content/50">
+                        {subtitle && (
+                            <span className="truncate font-medium text-primary/85">{subtitle}</span>
+                        )}
+                        {subtitle && item.year && (
+                            <span aria-hidden="true" className="text-base-content/25">·</span>
+                        )}
+                        {item.year && <span className="tabular-nums">{item.year}</span>}
+                    </p>
+                )}
             </FocusButton>
 
             <FavoriteButton

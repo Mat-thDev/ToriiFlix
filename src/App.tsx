@@ -5,7 +5,6 @@ import HomeRoute from "./components/routes/Home";
 import DetailRoute from "./components/routes/Detail";
 import SearchRoute from "./components/routes/Search";
 import CatalogueRoute from "./components/routes/Catalogue";
-import NotFoundRoute from "./components/routes/NotFound";
 import SettingsRoute from "./components/routes/Settings";
 import useNavigation from "./hooks/useNavigation";
 import useProfile from "./hooks/useProfile";
@@ -15,6 +14,7 @@ import { FocusSection } from "./components/ui/FocusSection";
 import WhosWatching from "./components/ui/WhosWatching";
 import WatchRoute from "./components/routes/Watch";
 import HistoryRoute from "./components/routes/History";
+import ChannelsRoute from "./components/routes/Channels";
 
 
 const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactElement => {
@@ -30,7 +30,7 @@ const renderRoute = (page: Nav.Page, props: Nav.PageProps[Nav.Page]): ReactEleme
     case "History":
       return <HistoryRoute />;
     case "Channels":
-      return <NotFoundRoute />;
+      return <ChannelsRoute />;
     case "Watch":
       return <WatchRoute />;
     default:

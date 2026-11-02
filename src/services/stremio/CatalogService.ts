@@ -1,18 +1,33 @@
 import { CINEMETA } from "./builtinAddons";
+import { isChannelLike, kindVariants, matchesKind } from "./kinds";
 import { hasResource } from "./resources";
 import { settleOrThrow } from "./settle";
 import { getCatalog, getMeta } from "./StremioClient";
 
 const DEFAULT_SOURCES = [CINEMETA.baseUrl];
 
-const isKind = (type?: string): type is Media.Kind => type === "movie" || type === "series";
+const KINDS: readonly string[] = ["movie", "series", "channel", "tv"];
 
-export const catalogSources = (external: Stremio.ExternalAddon[] = []): string[] => [
-  ...DEFAULT_SOURCES,
-  ...external
-    .filter((a) => a.enabled && hasResource(a.manifest.resources, "catalog"))
-    .map((a) => a.url),
-];
+const isKind = (type?: string): type is Media.Kind => !!type && KINDS.includes(type);
+
+export const catalogSources = (
+  external: Stremio.ExternalAddon[] = [],
+  kind?: Media.Kind,
+): string[] => {
+  // Cinemeta não serve catálogo de canal — builtin só nos kinds de filme/série
+  const builtin = !kind || !isChannelLike(kind) ? DEFAULT_SOURCES : [];
+
+  const addons = external
+    .filter(
+      (a) =>
+        a.enabled &&
+        hasResource(a.manifest.resources, "catalog") &&
+        (!kind || a.manifest.catalogs?.some((c) => matchesKind(c.type, kind))),
+    )
+    .map((a) => a.url);
+
+  return [...builtin, ...addons];
+};
 
 /** Bruto (Stremio) -> contrato da UI (Media). Inválido retorna null. */
 export const toMediaItem = (raw: Stremio.Meta): Media.Item | null => {
@@ -45,7 +60,8 @@ const mergeItems = (batches: Media.Item[][], limit: number): Media.Item[] => {
   const items: Media.Item[] = [];
 
   for (const item of batches.flat()) {
-    const key = `${item.type}:${item.id}`;
+    // Canal deduplica por id: o mesmo canal pode chegar como "channel:x" e "tv:x"
+    const key = isChannelLike(item.type) ? `channel:${item.id}` : `${item.type}:${item.id}`;
     if (seen.has(key)) continue;
     seen.add(key);
     items.push(item);
@@ -65,8 +81,12 @@ export const listCatalog = async (
   const extra: Stremio.Extra = {};
   if (genre) extra.genre = genre;
 
+  // Canal: pedir os dois nomes de tipo por fonte (addon declara "channel" ou "tv");
+  // o 404 do tipo errado é descartado pelo settleOrThrow.
   const responses = await settleOrThrow(
-    sources.map((base) => getCatalog(base, kind, list, extra, signal)),
+    sources.flatMap((base) =>
+      kindVariants(kind).map((type) => getCatalog(base, type, list, extra, signal)),
+    ),
   );
 
   return { items: mergeItems(responses.map(toItems), limit) };

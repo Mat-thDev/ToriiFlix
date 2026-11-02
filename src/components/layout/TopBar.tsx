@@ -57,7 +57,8 @@ const TopBar = () => {
   }, [currentPage]);
 
   // Search tem o proprio campo no topo (referencia TV) — sem sobreposicao
-  if (currentPage === "Search") return null;
+  // Channels roda em fullscreen (player cobre a viewport) — sem sobreposicao
+  if (currentPage === "Search" || currentPage === "Channels") return null;
 
   return (
     <header

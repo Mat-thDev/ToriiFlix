@@ -16,7 +16,7 @@ const EpisodesTab = ({ media, language }: UI.EpisodesTabProps) => {
     return <p className="py-8 text-sm text-base-content/50">Nenhuma temporada disponível.</p>;
   }
 
-  const handleWatch = (season: number, number: number) => {
+  const handleWatch = (season: number, number: number, name?: string) => {
     showModal("StreamSelector", {
       type: media.item.type,
       id: media.item.id,
@@ -24,7 +24,8 @@ const EpisodesTab = ({ media, language }: UI.EpisodesTabProps) => {
       details: media.details ?? undefined,
       episode: {
         season,
-        number
+        number,
+        name
       }
     })
   }
@@ -85,7 +86,7 @@ const EpisodesTab = ({ media, language }: UI.EpisodesTabProps) => {
                   type="button"
                   title={`Episódio ${episode.number}: ${episode.name ?? ""}`}
                   aria-label={`Episódio ${episode.number}: ${episode.name ?? ""}`}
-                  onClick={() => handleWatch(seasonNumber ?? 1, episode.number)}
+                  onClick={() => handleWatch(seasonNumber ?? 1, episode.number, episode.name)}
                   className="flex w-full gap-4 rounded-xl bg-base-200/60 p-3 text-left ring-1 ring-base-content/5 transition-shadow data-focused:ring-2 data-focused:ring-primary"
                 >
                   <div className="relative h-24 w-44 shrink-0 overflow-hidden rounded-lg bg-base-content/10">

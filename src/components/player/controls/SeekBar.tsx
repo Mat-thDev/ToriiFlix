@@ -2,7 +2,7 @@ import { type CSSProperties } from "react";
 import { TimeSlider } from "@videojs/react";
 import Timestamp from "./Timestamp";
 
-const SeekBar = ({ playbackSettings }: { playbackSettings: AppSettings.Playback }) => {
+const SeekBar = () => {
 
   return (
     <div className="relative flex w-full flex-col justify-center">

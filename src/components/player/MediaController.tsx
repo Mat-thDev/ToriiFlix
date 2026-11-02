@@ -2,6 +2,10 @@ import { usePlayer } from "@videojs/react/video";
 import { useEffect, useRef } from "react";
 import useHistory from "../../hooks/useHistory";
 
+/** Identidade do restore: uma posição por id + episódio (séries). */
+const resumeKey = (id: string | number, episode?: Media.EpisodeRef) =>
+    episode ? `${id}:${episode.season}:${episode.number}` : String(id);
+
 const MediaController = ({
     playbackSettings,
     streamConfig
@@ -14,22 +18,21 @@ const MediaController = ({
     const { upsertHistory, fetchHistory } = useHistory();
 
     const restoredMedia = useRef<string | null>(null);
+    const markedWatched = useRef(false);
+    const episode = streamConfig.episode;
+    const key = resumeKey(streamConfig.id, episode);
 
-    // Retorna de onde parou
+    // Retorna de onde parou (por episódio em séries, por id em filmes)
     useEffect(() => {
         if (!streamConfig.id || !store.target) return;
 
-        if (restoredMedia.current === String(streamConfig.id)) return;
+        if (restoredMedia.current === key) return;
 
-        const data = fetchHistory(streamConfig.id);
+        const data = fetchHistory(streamConfig.id, episode);
 
-        if (!data) {
-            restoredMedia.current = String(streamConfig.id);
-            return;
-        }
+        restoredMedia.current = key;
 
-        restoredMedia.current = String(streamConfig.id);
-
+        if (!data) return;
         if (data.watched) return;
 
         const watchedTime = Number(data.watchedTime);
@@ -38,29 +41,38 @@ const MediaController = ({
             store.seek(watchedTime);
         }
 
-    }, [streamConfig.id, store, fetchHistory]);
+    }, [key, streamConfig.id, episode, store, fetchHistory]);
 
     // Salva o histórico
     useEffect(() => {
         if (!playbackSettings.saveHistory) return;
         if (!streamConfig.id) return;
 
+        markedWatched.current = false;
+
         const interval = setInterval(() => {
             const currentTime = store.currentTime;
             const duration = store.duration;
 
-            if (currentTime <= 0 || duration > 0 && currentTime >= duration) return;
+            if (markedWatched.current) return;
+            if (currentTime <= 0) return;
+
+            // Marca assistido ao chegar no fim (não descarta o último save)
+            const watched = duration > 0 && currentTime >= duration;
 
             const data: Media.MediaHistory = {
                 id: streamConfig.id,
                 media: streamConfig.media.item,
+                episode,
                 watchedTime: currentTime,
                 duration,
-                watched: duration > 0 && currentTime >= duration,
+                watched,
                 timestamp: new Date().toISOString()
             };
 
             upsertHistory(data);
+            // fim: para de atualizar p/ não reordenar a lista por timestamp
+            if (watched) markedWatched.current = true;
         }, 3000);
 
         return () => clearInterval(interval);
@@ -69,6 +81,7 @@ const MediaController = ({
         playbackSettings.saveHistory,
         streamConfig.id,
         streamConfig.media.item,
+        episode,
         upsertHistory
     ]);
 

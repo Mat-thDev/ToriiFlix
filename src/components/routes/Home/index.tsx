@@ -50,7 +50,7 @@ const HomeRoute = () => {
       {error ? (
         <ErrorAlert message={`Não foi possível carregar o destaque: ${error}`} onRetry={retry} />
       ) : (
-        <Billboard item={featured} loading={loading} />
+        <Billboard item={featured ?? null} loading={loading} />
       )}
 
       <div className="mt-8 space-y-8">

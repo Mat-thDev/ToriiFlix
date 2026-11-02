@@ -57,9 +57,13 @@ const MediaCard = ({ item, onSelect }: UI.MediaCardProps) => {
           )}
         </div>
 
-        <p className="mt-2 line-clamp-2 text-sm leading-snug font-semibold">{item.name}</p>
+        <p className="mt-2 line-clamp-1 text-sm leading-snug font-semibold">{item.name}</p>
 
-        {item.year && <p className="mt-0.5 text-xs text-base-content/55">{item.year}</p>}
+        {item.year && (
+          <p className="mt-0.5 text-xs leading-snug text-base-content/50 tabular-nums">
+            {item.year}
+          </p>
+        )}
       </FocusButton>
 
       <FavoriteButton

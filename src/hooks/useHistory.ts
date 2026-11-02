@@ -1,18 +1,26 @@
+import { useCallback } from "react";
 import { useAtom } from "jotai";
 import { historyAtom } from "../atoms/history";
+
+/**
+ * Entradas são distintas por id + episódio: filmes/direto têm uma entrada
+ * por id; séries têm uma entrada por episódio (evita E2 sobrescrever E1).
+ */
+const sameEntry = (item: Media.MediaHistory, id: string | number, episode?: Media.EpisodeRef) =>
+    item.id === id &&
+    (item.episode?.season ?? -1) === (episode?.season ?? -1) &&
+    (item.episode?.number ?? -1) === (episode?.number ?? -1);
 
 const useHistory = () => {
     const [history, setHistory] = useAtom(historyAtom);
 
-    const upsertHistory = (newData: Media.MediaHistory) => {
+    const upsertHistory = useCallback((newData: Media.MediaHistory) => {
         setHistory((prev) => {
-            const exists = prev.some(
-                (item) => item.id === newData.id
-            );
+            const exists = prev.some((item) => sameEntry(item, newData.id, newData.episode));
 
             if (exists) {
                 return prev.map((item) =>
-                    item.id === newData.id
+                    sameEntry(item, newData.id, newData.episode)
                         ? { ...item, ...newData }
                         : item
                 );
@@ -20,22 +28,28 @@ const useHistory = () => {
 
             return [...prev, newData];
         });
-    };
+    }, [setHistory]);
 
-    const fetchHistory = (id: string | number) => {
-        return history.filter((i) => i.id === id)[0];
-    }
+    const fetchHistory = useCallback(
+        (id: string | number, episode?: Media.EpisodeRef) =>
+            history.find((i) => sameEntry(i, id, episode)),
+        [history],
+    );
 
-    const removeHistory = (id: string | number) => {
-        setHistory((prev) => prev.filter((item) => item.id !== id));
-    };
+    const removeHistory = useCallback(
+        (id: string | number, episode?: Media.EpisodeRef) => {
+            setHistory((prev) => prev.filter((item) => !sameEntry(item, id, episode)));
+        },
+        [setHistory],
+    );
 
-    const clearHistory = () => {
-        setHistory([]);
-    };
+    const clearHistory = useCallback(() => setHistory([]), [setHistory]);
 
     return {
-        history: history.sort((a, b) => Number(new Date(b.timestamp)) - Number(new Date(a.timestamp))),
+        // cópia — nunca ordenar o array do atom in-place
+        history: [...history].sort(
+            (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
+        ),
         upsertHistory,
         fetchHistory,
         removeHistory,
