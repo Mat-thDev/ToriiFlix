@@ -14,6 +14,7 @@ const KIND_LABEL: Record<Media.Kind, string> = {
   series: "Série",
   tv: "Canal",
   channel: "Canal",
+  subtitles: "Legenda",
 };
 
 /** Qualidade embutida no titulo do addon (ex.: "Torrentio 1080p ..."). */

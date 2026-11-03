@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { Filter, Tv } from "lucide-react";
+import { Filter, Layers, Tv } from "lucide-react";
 import ChannelRow from "./ChannelRow";
 
 const INITIAL_COUNT = 30;
