@@ -14,13 +14,17 @@ import SeekBar from "./controls/SeekBar";
 import useSettings from "../../hooks/useSettings";
 import MediaController from "./MediaController";
 import PlayerSurface from "./PlayerSurface";
+import { useSubtitles } from "../../hooks/useSubtitle";
+import CaptionButton from "./controls/CaptionButton";
 
 
 const ToriiPlayer = () => {
-  const { settings } = useSettings()
   const { currentPage, currentProps, goBack } = useNavigation();
 
   const streamConfig = currentProps as Player.StreamConfig
+
+  const { subtitles, loading } = useSubtitles(streamConfig.media.item.type, streamConfig.media.item.id, streamConfig.episode)
+  const { settings } = useSettings()
 
   useEffect(() => {
     if ((!streamConfig.stream || !streamConfig.id) && currentPage === "Watch") {
@@ -35,12 +39,20 @@ const ToriiPlayer = () => {
 
   const { id, stream, media } = streamConfig;
 
+  if (loading && subtitles.length === 0) {
+    return (
+      <div className="fixed inset-0 z-60 flex items-center justify-center bg-base-100 text-base-content">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
   return (
     <PlayerSurface
       key={id}
       src={stream.url}
       backgroundImage={media.item.background}
       autoPlay={settings.playback.autoPlay}
+      subtitles={subtitles}
       className="fixed inset-0 z-60 h-dvh w-screen has-[&_[data-controls]:not([data-visible])]:cursor-none"
     >
       <MediaController playbackSettings={settings.playback} streamConfig={streamConfig} />
@@ -49,14 +61,16 @@ const ToriiPlayer = () => {
           <BackButton onClick={goBack} />
           <MediaState mediaData={media} />
         </PlayerRow>
-
         <PlayerRow bottom>
           <SeekBar />
-          <div className="pointer-events-auto flex w-full items-center gap-2">
-            <SkipButton time={-15} />
-            <PlayButton />
-            <SkipButton time={15} />
-            <VolumeBar playbackSettings={settings.playback} />
+          <div className="flex items-center justify-between">
+            <div className="pointer-events-auto flex w-full items-center gap-2">
+              <SkipButton time={-15} />
+              <PlayButton />
+              <SkipButton time={15} />
+              <VolumeBar playbackSettings={settings.playback} />
+            </div>
+            <CaptionButton />
           </div>
         </PlayerRow>
       </PlayerControls>

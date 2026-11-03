@@ -7,6 +7,7 @@ declare namespace Player {
     muted?: boolean;
     className?: string;
     children?: React.ReactNode
+    subtitles?: Media.SubtitleTrack[];
   }
 
   interface ChannelPlayerProps {

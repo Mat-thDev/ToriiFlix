@@ -4,7 +4,7 @@
  */
 declare namespace Media {
   /** Tipo de conteúdo. */
-  type Kind = "movie" | "series" | "tv" | "channel";
+  type Kind = "movie" | "series" | "tv" | "channel" | "subtitles";
 
   /** Item de catálogo/detalhe já mapeado. */
   interface Item {
@@ -75,6 +75,13 @@ declare namespace Media {
     provider: string;
     /** Título/linha do stream no formato do addon (qualidade, idioma, tamanho...). */
     title?: string;
+  }
+
+  interface SubtitleTrack {
+    id: string;
+    lang: string;
+    url: string;
+    name?: string;
   }
 
   /**

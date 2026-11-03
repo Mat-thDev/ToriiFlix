@@ -39,6 +39,25 @@ declare namespace Stremio {
     streams: Stream[];
   }
 
+
+
+  interface SubtitleResponse {
+    subtitles: Subtitle[]
+  }
+
+  interface Subtitle {
+    id: string;
+    sub_id: string;
+    ai_translated: boolean;
+    from_trusted: boolean;
+    uploader_id: number;
+    lang_code: string;
+    lang: string;
+    title: string;
+    moviehash: string | null;
+    url: string;
+  }
+
   /** Stream de um addon — campos do protocolo (ranking fica na camada de player). */
   interface Stream {
     /** URL direta (http(s)/file) — presente em streams não-torrent. */

@@ -74,6 +74,16 @@ export const getCatalog = (
   return fetchJson<Stremio.CatalogResponse>(buildUrl(base, path), signal);
 };
 
+export const getSubtitles = (
+  base: string,
+  type: string,
+  id: string,
+  signal?: AbortSignal,
+): Promise<Stremio.SubtitleResponse> => {
+  const path = `subtitles/${encodeURIComponent(type)}/${encodeVideoId(id)}.json`;
+  return fetchJson<Stremio.SubtitleResponse>(buildUrl(base, path), signal);
+};
+
 export const getMeta = (
   base: string,
   type: string,
