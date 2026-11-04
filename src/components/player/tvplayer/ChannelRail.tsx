@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { Filter, Layers, Tv } from "lucide-react";
+import { Filter, Tv } from "lucide-react";
+import { FocusButton } from "../../ui/FocusButton";
 import ChannelRow from "./ChannelRow";
 
 const INITIAL_COUNT = 30;
@@ -59,24 +60,37 @@ const ChannelRail = ({
     return (
         <nav
             aria-label="Canais e Categorias"
+            data-channel-rail=""
             data-visible={visible || undefined}
+            // Mantém o painel vivo só quando o mouse está por cima dele —
+            // mover o mouse sobre o vídeo NÃO abre mais o rail (não bloqueia os controles).
+            onPointerMove={() => onActivity?.()}
             className={clsx(
-                "absolute inset-y-0 left-0 z-5 w-64 bg-gradient-to-r from-black/85 via-black/50 to-transparent",
+                // Painel largo com limites: ocupa a tela de forma proporcional
+                // sem cobrir o vídeo todo em resoluções grandes.
+                "absolute inset-y-0 left-0 z-5 flex flex-col",
+                "w-[44%] max-w-[720px] min-w-[340px]",
+                "bg-black/90",
                 "pointer-events-none -translate-x-4 opacity-0 transition-[opacity,translate] duration-300",
                 "data-visible:pointer-events-auto data-visible:translate-x-0 data-visible:opacity-100",
-                "flex flex-col p-4 pr-2"
+                "p-5 pr-4",
             )}
         >
-            {/* Seletor de Addons / Fontes */}
-            {addons.length > 0 && onSelectAddon && (
-                <div className="mb-3 pb-3 border-b border-white/10">
-                    <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
-                        <Layers className="size-3" /> Addon / Fonte
-                    </label>
+            {/* Cabeçalho — título + contagem (+ addon quando existir) */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                <div className="min-w-0">
+                    <h2 className="truncate text-lg font-bold leading-tight text-white">Canais</h2>
+                    <p className="text-[11px] font-medium text-white/50">
+                        {filteredChannels.length} {filteredChannels.length === 1 ? "canal" : "canais"}
+                        {selectedGenre ? ` · ${selectedGenre}` : ""}
+                    </p>
+                </div>
+                {addons.length > 0 && onSelectAddon && (
                     <select
+                        aria-label="Addon / Fonte"
                         value={selectedAddonUrl}
                         onChange={(e) => onSelectAddon(e.target.value)}
-                        className="w-full bg-black/70 border border-white/15 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="max-w-[50%] shrink-0 rounded-lg border border-white/15 bg-black/70 px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                         {addons.map((addon) => (
                             <option key={addon.url} value={addon.url} className="bg-zinc-900 text-white">
@@ -84,27 +98,58 @@ const ChannelRail = ({
                             </option>
                         ))}
                     </select>
-                </div>
-            )}
+                )}
+            </div>
 
-            {/* Seletor de Gênero / Categoria */}
+            {/* Categorias — chips focáveis pelo remote: Esq/Dir trocam de
+                categoria (linha detectada pelo PlayerKeyHandler como "chip row",
+                então a esquerda aqui navega em vez de fechar o rail) */}
             {availableGenres.length > 0 && onSelectGenre && (
-                <div className="mb-3 pb-3 border-b border-white/10">
-                    <label className="flex items-center gap-1.5 text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1.5">
-                        <Filter className="size-3" /> Categoria / Gênero
-                    </label>
-                    <select
-                        value={selectedGenre || ""}
-                        onChange={(e) => onSelectGenre(e.target.value ? e.target.value : undefined)}
-                        className="w-full bg-black/70 border border-white/15 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary"
-                    >
-                        <option value="" className="bg-zinc-900 text-white">Todas as categorias</option>
+                <div data-chip-row className="border-b border-white/10 py-3">
+                    <span className="mb-2 flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-white/50 uppercase">
+                        <Filter className="size-3" /> Categorias
+                    </span>
+                    <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5">
+                        <FocusButton
+                            type="button"
+                            focusKey="GENRE_ALL"
+                            aria-pressed={!selectedGenre}
+                            onFocus={() => onActivity?.()}
+                            onClick={() => {
+                                onActivity?.();
+                                onSelectGenre(undefined);
+                            }}
+                            className={clsx(
+                                "max-w-full shrink-0 truncate rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                                !selectedGenre
+                                    ? "bg-primary text-primary-content"
+                                    : "bg-white/10 text-white/70 hover:bg-white/15",
+                            )}
+                        >
+                            Todas
+                        </FocusButton>
                         {availableGenres.map((genre) => (
-                            <option key={genre} value={genre} className="bg-zinc-900 text-white">
+                            <FocusButton
+                                key={genre}
+                                type="button"
+                                focusKey={`GENRE_${genre}`}
+                                aria-pressed={selectedGenre === genre}
+                                onFocus={() => onActivity?.()}
+                                onClick={() => {
+                                    onActivity?.();
+                                    onSelectGenre(genre);
+                                }}
+                                className={clsx(
+                                    "max-w-full shrink-0 truncate rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                                    selectedGenre === genre
+                                        ? "bg-primary text-primary-content"
+                                        : "bg-white/10 text-white/70 hover:bg-white/15",
+                                )}
+                            >
                                 {genre}
-                            </option>
+                            </FocusButton>
                         ))}
-                    </select>
+                    </div>
                 </div>
             )}
 
@@ -113,13 +158,17 @@ const ChannelRail = ({
                 ref={listRef}
                 onScroll={onScroll}
                 aria-busy={loading || undefined}
-                className="flex-1 space-y-3 overflow-y-auto pr-2"
+                className="flex-1 space-y-2.5 overflow-y-auto pr-1 pt-3"
             >
                 {loading && channels.length === 0 &&
                     Array.from({ length: SKELETON_COUNT }, (_, i) => (
-                        <li key={`skeleton-${i}`} aria-hidden="true" className="overflow-hidden rounded-xl bg-white/5 ring-1 ring-white/10">
-                            <div className="h-16 w-full animate-pulse bg-white/10" />
-                            <div className="space-y-1.5 px-3 pb-2.5 pt-2">
+                        <li
+                            key={`skeleton-${i}`}
+                            aria-hidden="true"
+                            className="flex items-center gap-3 rounded-xl bg-white/5 p-2 ring-1 ring-white/10"
+                        >
+                            <div className="size-14 shrink-0 animate-pulse rounded-lg bg-white/10" />
+                            <div className="min-w-0 flex-1 space-y-2">
                                 <div className="h-3 w-3/4 animate-pulse rounded bg-white/10" />
                                 <div className="h-2 w-1/2 animate-pulse rounded bg-white/10" />
                             </div>

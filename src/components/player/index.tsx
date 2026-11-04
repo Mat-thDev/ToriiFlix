@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Gesture, Hotkey } from "@videojs/react";
 
 import BackButton from "./controls/BackButton";
@@ -13,25 +13,36 @@ import { toast } from "react-toastify";
 import SeekBar from "./controls/SeekBar";
 import useSettings from "../../hooks/useSettings";
 import MediaController from "./MediaController";
+import PlayerKeyHandler from "./PlayerKeyHandler";
 import PlayerSurface from "./PlayerSurface";
 import { useSubtitles } from "../../hooks/useSubtitle";
 import CaptionButton from "./controls/CaptionButton";
 
 
+const isStreamConfig = (config: Player.StreamConfig | undefined): config is Player.StreamConfig =>
+  !!config?.media?.item && !!config.stream && !!config.id;
+
 const ToriiPlayer = () => {
   const { currentPage, currentProps, goBack } = useNavigation();
 
-  const streamConfig = currentProps as Player.StreamConfig
+  const liveConfig = currentProps as Player.StreamConfig | undefined;
+  const liveValid = isStreamConfig(liveConfig) ? liveConfig : null;
 
-  const { subtitles, loading } = useSubtitles(streamConfig.media.item.type, streamConfig.media.item.id, streamConfig.episode)
+  const lastValidRef = useRef<Player.StreamConfig | null>(null);
+  if (liveValid) lastValidRef.current = liveValid;
+
+  const streamConfig = liveValid ?? lastValidRef.current;
+  const item = streamConfig?.media.item;
+
+  const { subtitles, loading } = useSubtitles(item?.type, item?.id, streamConfig?.episode)
   const { settings } = useSettings()
 
   useEffect(() => {
-    if ((!streamConfig.stream || !streamConfig.id) && currentPage === "Watch") {
+    if ((!liveConfig?.stream || !liveConfig?.id) && currentPage === "Watch") {
       toast.error("Falha ao inicializar o reprodutor.");
       goBack();
     }
-  }, [streamConfig, goBack]);
+  }, [liveConfig, currentPage, goBack]);
 
   if (!streamConfig || !streamConfig.stream || !streamConfig.id) {
     return null;
@@ -56,6 +67,7 @@ const ToriiPlayer = () => {
       className="fixed inset-0 z-60 h-dvh w-screen has-[&_[data-controls]:not([data-visible])]:cursor-none"
     >
       <MediaController playbackSettings={settings.playback} streamConfig={streamConfig} />
+      <PlayerKeyHandler mode="watch" />
       <PlayerControls>
         <PlayerRow top>
           <BackButton onClick={goBack} />

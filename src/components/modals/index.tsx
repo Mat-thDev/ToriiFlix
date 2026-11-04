@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { ComponentType } from "react";
 import { X } from "lucide-react";
 import useModals from "../../hooks/useModals";
@@ -15,11 +15,21 @@ const MODAL_MAPPING: Record<Modals.ModalsKeys, ComponentType<any>> = {
 const ModalProvider = () => {
   const { currentModal, currentProps, closeModal } = useModals();
   const { currentPage } = useNavigation()
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!currentModal) return;
     closeModal();
   }, [currentPage])
+
+  // showModal(): focus-trap nativa + `inert` no fundo (restauração de foco automática ao fechar)
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!currentModal || !dialog) return;
+
+    if (!dialog.open) dialog.showModal();
+    return () => dialog.close();
+  }, [currentModal]);
 
 
   useEffect(() => {
@@ -40,7 +50,15 @@ const ModalProvider = () => {
   const ModalElement = MODAL_MAPPING[currentModal];
 
   return (
-    <dialog id={currentModal} className="modal" open>
+    <dialog
+      ref={dialogRef}
+      id={currentModal}
+      className="modal"
+      onCancel={(e) => {
+        e.preventDefault(); // Esc: fecha via estado React (não dessincroniza)
+        closeModal();
+      }}
+    >
       <FocusSection
         focusKey="MODAL"
         autoFocus

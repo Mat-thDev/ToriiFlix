@@ -10,6 +10,9 @@ const THEME_OPTIONS: UI.SegmentedOption<AppSettings.Theme>[] = [
   { value: "torii-ember", label: "Ember" },
   { value: "torii-ink", label: "Ink" },
   { value: "torii-noir", label: "Noir" },
+  { value: "torii-sakura", label: "Sakura" },
+  { value: "torii-ocean", label: "Oceano" },
+  { value: "torii-jade", label: "Jade" },
 ];
 
 const DENSITY_OPTIONS: UI.SegmentedOption<AppSettings.CardDensity>[] = [

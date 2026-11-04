@@ -14,6 +14,8 @@ init({
   visualDebug: false,
   shouldFocusDOMNode: true,
   useGetBoundingClientRect: true,
+  // Limia a repetição da seta segurada no remote (~14 nav/s, resposta imediata)
+  throttle: 70,
 });
 
 const Provider = ({ children }: UI.ProviderProps) => {

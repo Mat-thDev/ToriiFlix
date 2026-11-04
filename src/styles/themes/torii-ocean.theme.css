@@ -1,0 +1,28 @@
+@plugin "daisyui/theme" {
+  name: "torii-ocean";
+  prefersdark: true;
+  color-scheme: "dark";
+  /* Oceano - teal profundo com azul-marinho */
+  --color-base-100: oklch(13% 0.014 215);
+  --color-base-200: oklch(17% 0.016 215);
+  --color-base-300: oklch(23% 0.018 215);
+  --color-base-content: oklch(97% 0.004 215);
+  --color-primary: oklch(70% 0.14 205);
+  --color-primary-content: oklch(15% 0.03 205);
+  --color-secondary: oklch(62% 0.15 255);
+  --color-secondary-content: oklch(97% 0.005 255);
+  --color-accent: oklch(76% 0.14 165);
+  --color-accent-content: oklch(15% 0.03 165);
+  --color-neutral: oklch(22% 0.012 215);
+  --color-neutral-content: oklch(96% 0.004 215);
+  --color-info: oklch(72% 0.14 240);
+  --color-success: oklch(70% 0.17 155);
+  --color-warning: oklch(84% 0.16 85);
+  --color-error: oklch(62% 0.21 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

@@ -5,6 +5,7 @@ import { useAnimations } from "../../hooks/useAppearance";
  * Botão focável — primitivo de ação do app (navegação espacial remote/setas).
  * Enter dispara o clique nativo; o foco rola o elemento só o necessário
  * (scroll suave respeita o switch de animações das settings).
+ * O indicador de foco vem do outline global de `button[data-focused]` (App.css).
  */
 export const FocusButton = ({
   children,

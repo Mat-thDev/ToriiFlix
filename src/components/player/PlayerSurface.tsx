@@ -2,6 +2,7 @@ import { Suspense, useState } from "react";
 import { BufferingIndicator, Container, ErrorDialog, StatusAnnouncer } from "@videojs/react";
 import { Video, VideoPlayer } from "@videojs/react/video";
 import clsx from "clsx";
+import SubtitleOverlay from "./SubtitleOverlay";
 
 
 const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, className, children }: Player.PlayerSurfaceProps) => {
@@ -15,6 +16,7 @@ const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, class
                     "overflow-hidden bg-base-300 [&>video]:size-full [&>video]:object-contain [&>video]:bg-black",
                     className,
                 )}
+                id="toriiplayer"
             >
                 {!isPlaying && backgroundImage && (
                     <div
@@ -46,7 +48,7 @@ const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, class
                 </Suspense>
 
                 <div
-                    className="pointer-events-none absolute right-6 bottom-6 z-1 text-xs font-bold tracking-[0.2em] text-base-content/20 uppercase"
+                    className="pointer-events-none absolute right-6 bottom-6 z-1 text-xs font-bold tracking-[0.2em] text-base-content/30 uppercase [text-shadow:0_1px_8px_color-mix(in_oklab,var(--color-base-300)_80%,transparent)]"
                     aria-hidden
                 >
                     ToriiFlix
@@ -65,6 +67,9 @@ const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, class
                 />
                 <StatusAnnouncer />
                 {children}
+                {/* Legenda própria: acima do gradiente (z-1, depois dos controles
+                    no DOM) e abaixo do conteúdo dos botões (z-2) */}
+                <SubtitleOverlay />
                 <ErrorDialog.Root>
                     <ErrorDialog.Backdrop className="absolute inset-0 z-6 bg-base-300/60" />
                     <ErrorDialog.Popup className="absolute top-1/2 left-1/2 z-7 flex w-[min(24rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 rounded-(--radius-box) border border-base-content/10 bg-base-200 p-5 text-base-content">

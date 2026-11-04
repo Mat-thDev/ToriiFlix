@@ -68,7 +68,10 @@ const App = () => {
             exit={{ opacity: 0 }}
             transition={transition}
           >
-            <FocusSection autoFocus>
+            <FocusSection
+              autoFocus
+              isFocusBoundary={currentPage === "Watch" || currentPage === "Channels"}
+            >
               {renderRoute(currentPage, currentProps)}
             </FocusSection>
           </motion.div>

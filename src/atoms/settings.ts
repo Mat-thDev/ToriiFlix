@@ -8,7 +8,10 @@ export const DEFAULT_SETTINGS: AppSettings.Settings = {
         volume: 50,
         autoPlay: true,
         saveHistory: true,
-        autoNextEpisode: false
+        autoNextEpisode: false,
+        subtitleSize: "medium",
+        subtitleFont: "default",
+        subtitleBackground: "dark"
     },
     appearance: {
         theme: "torii",

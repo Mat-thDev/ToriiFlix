@@ -1,0 +1,28 @@
+@plugin "daisyui/theme" {
+  name: "torii-sakura";
+  prefersdark: true;
+  color-scheme: "dark";
+  /* Sakura - rosa suave sobre grafite rosado */
+  --color-base-100: oklch(13% 0.012 350);
+  --color-base-200: oklch(17% 0.014 350);
+  --color-base-300: oklch(22% 0.016 350);
+  --color-base-content: oklch(97% 0.004 350);
+  --color-primary: oklch(68% 0.19 350);
+  --color-primary-content: oklch(16% 0.03 350);
+  --color-secondary: oklch(60% 0.17 320);
+  --color-secondary-content: oklch(97% 0.005 320);
+  --color-accent: oklch(76% 0.13 30);
+  --color-accent-content: oklch(15% 0.02 30);
+  --color-neutral: oklch(22% 0.012 350);
+  --color-neutral-content: oklch(96% 0.004 350);
+  --color-info: oklch(70% 0.13 235);
+  --color-success: oklch(70% 0.17 150);
+  --color-warning: oklch(84% 0.16 85);
+  --color-error: oklch(62% 0.21 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

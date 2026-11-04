@@ -11,7 +11,7 @@ export function SegmentedControl<T extends string>({
   return (
     <div
       role="radiogroup"
-      className="flex shrink-0 gap-1 rounded-full border border-base-content/10 bg-base-content/5 p-1"
+      className="flex max-w-full flex-wrap justify-end gap-1 rounded-full border border-base-content/10 bg-base-content/5 p-1"
       {...rest}
     >
       {options.map((option) => (
