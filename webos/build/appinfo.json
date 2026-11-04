@@ -1,0 +1,11 @@
+{
+  "id": "flix.torii.app",
+  "version": "0.1.7",
+  "vendor": "ToriiFlix",
+  "type": "web",
+  "main": "index.html",
+  "title": "ToriiFlix",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "resolution": "1920x1080"
+}

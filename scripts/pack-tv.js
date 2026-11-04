@@ -27,7 +27,7 @@ if (!existsSync('webos/build/icon.png')) {
 
 // Lê o appinfo.json para pegar o ID e a versão corretos para o nome do arquivo IPK
 let appId = 'flix.torii.app';
-let appVersion = '0.1.7';
+let appVersion = '1.2.5';
 try {
   const appInfoContent = JSON.parse(readFileSync('webos/appinfo.json', 'utf-8'));
   if (appInfoContent.id) appId = appInfoContent.id;
@@ -36,21 +36,30 @@ try {
   // usa os fallbacks definidos acima
 }
 
+// Substitua o bloco final do seu scripts/pack-tv.js por este:
+
 const ipkName = `${appId}_${appVersion}_all.ipk`;
 const ipkOutputPath = join('webos', ipkName);
 
-log(`Gerando pacote IPK: ${ipkName}...`);
+log(`Gerando pacote IPK...`);
 
-// O webOS IPK é um pacote tar/gzip compactado. Vamos usar o comando nativo tar do Windows (disponível no Win 10/11)
-// para empacotar a pasta webos/build diretamente no formato tar.gz e renomear para .ipk, contornando o bug do rimraf do ares-package.
 try {
-  // Remove IPK anterior se existir
   if (existsSync(ipkOutputPath)) rmSync(ipkOutputPath);
 
-  // Executa o tar nativo do Windows a partir de dentro da pasta webos/build para manter a estrutura correta
-  execSync(`tar -a -c -f "${ipkOutputPath}" -C "webos/build" .`, { stdio: 'inherit' });
+  // Executa o ares-package. Mesmo que ele dê erro no rimraf no final, 
+  // o arquivo .ipk costuma ser gerado com sucesso logo antes.
+  try {
+    execSync(`npx ares-package "webos/build" -o "webos" -n`, { stdio: 'inherit' });
+  } catch (cliErr) {
+    // Se o IPK foi gerado apesar do erro do rimraf, consideramos sucesso
+    if (!existsSync(ipkOutputPath)) {
+      throw cliErr;
+    }
+    log('Aviso: O ares-package encerrou com erro de limpeza (rimraf), mas o IPK foi gerado com sucesso.');
+  }
+
   log(`Sucesso! IPK gerado em: ${ipkOutputPath}`);
 } catch (err) {
-  log('Erro ao gerar o IPK via tar nativo. Tentando método alternativo...');
+  log('Erro crítico ao gerar o IPK.');
   throw err;
 }
