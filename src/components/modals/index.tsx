@@ -6,10 +6,12 @@ import { isBackEvent } from "../../platform/input";
 import { FocusButton } from "../ui/FocusButton";
 import { FocusSection } from "../ui/FocusSection";
 import StreamListModal from "./StreamListModal";
+import AddonInstallModal from "./AddonInstallModal";
 import useNavigation from "../../hooks/useNavigation";
 
 const MODAL_MAPPING: Record<Modals.ModalsKeys, ComponentType<any>> = {
   StreamSelector: StreamListModal,
+  AddonInstall: AddonInstallModal,
 };
 
 const ModalProvider = () => {

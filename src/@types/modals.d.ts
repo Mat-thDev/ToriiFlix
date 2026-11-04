@@ -1,5 +1,5 @@
 declare namespace Modals {
-  type ModalsKeys = "StreamSelector";
+  type ModalsKeys = "StreamSelector" | "AddonInstall";
 
   interface PropsMap {
     StreamSelector: {
@@ -8,6 +8,9 @@ declare namespace Modals {
       item?: Media.Item;
       details?: Media.Details;
       episode?: Media.EpisodeRef
+    };
+    AddonInstall: {
+      manifestUrl: string;
     };
   }
 

@@ -15,6 +15,7 @@
     "@noriginmedia/norigin-spatial-navigation-react": "^3.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-deep-link": "^2.6.3",
     "@tauri-apps/plugin-opener": "^2",
     "@videojs/hlsjs-video": "^10.2.0",
     "@videojs/react": "^10.2.0",

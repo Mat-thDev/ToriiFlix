@@ -16,21 +16,21 @@ const useAddons = () => {
   const [addons, setAddons] = useAtom(addonsAtom);
 
   const add = useCallback(
-    async (manifest: string) => {
+    async (manifest: string, manifestData?: Stremio.Manifest) => {
       if (!manifest) return;
 
       const baseUrl = toBaseUrl(manifest);
-      const manifestData = await getManifest(baseUrl);
+      const data = manifestData ?? (await getManifest(baseUrl));
 
-      if (!manifestData.id || !manifestData.name || !Array.isArray(manifestData.resources)) {
+      if (!data.id || !data.name || !Array.isArray(data.resources)) {
         throw new StremioError("Manifest inválido: id, name e resources são obrigatórios", baseUrl);
       }
 
-      if (addons.some((a) => a.manifest.id === manifestData.id)) {
-        throw new Error(`Addon "${manifestData.name}" já está instalado`);
+      if (addons.some((a) => a.manifest.id === data.id)) {
+        throw new Error(`Addon "${data.name}" já está instalado`);
       }
 
-      setAddons([...addons, { url: baseUrl, manifest: manifestData, enabled: true }]);
+      setAddons([...addons, { url: baseUrl, manifest: data, enabled: true }]);
     },
     [addons, setAddons],
   );

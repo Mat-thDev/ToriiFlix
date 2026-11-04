@@ -6,6 +6,7 @@ import useAppearance from "./hooks/useAppearance";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
 import useEditableFocus from "./hooks/useEditableFocus";
+import useDeepLink from "./hooks/useDeepLink";
 import { ToastContainer } from "react-toastify";
 import ModalProvider from "./components/modals";
 
@@ -43,6 +44,7 @@ const Provider = ({ children }: UI.ProviderProps) => {
 
   useBackNavigation();
   useEditableFocus();
+  useDeepLink();
 
   return (
     <FocusContext.Provider value={focusKey}>
