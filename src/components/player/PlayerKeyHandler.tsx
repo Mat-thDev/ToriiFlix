@@ -9,7 +9,9 @@ interface PlayerKeyHandlerProps {
     onActivity?: () => void;
     /** channels: OK/dir com o foco em body abre o rail (foca o canal atual). */
     onRailOpen?: () => void;
-    /** channels: esquerda dentro da lista fecha o rail (sem acordar a UI). */
+    /** channels: esquerda na coluna de canais salta pra coluna de categorias. */
+    onRailLeft?: () => void;
+    /** channels: esquerda fora da coluna de canais fecha o rail (sem acordar a UI). */
     onRailClose?: () => void;
 }
 
@@ -23,7 +25,7 @@ interface PlayerKeyHandlerProps {
  * O norigin faz preventDefault em TODA tecla do keymap (mesmo sem mover foco), então
  * toda decisão de "cortar" tem que acontecer aqui, antes dele, em capture.
  */
-const PlayerKeyHandler = ({ mode, onActivity, onRailOpen, onRailClose }: PlayerKeyHandlerProps) => {
+const PlayerKeyHandler = ({ mode, onActivity, onRailOpen, onRailLeft, onRailClose }: PlayerKeyHandlerProps) => {
     const store = usePlayer();
 
     useEffect(() => {
@@ -74,15 +76,18 @@ const PlayerKeyHandler = ({ mode, onActivity, onRailOpen, onRailClose }: PlayerK
             const active = document.activeElement;
             const railEl = document.querySelector("[data-channel-rail]");
             const inRail = !!railEl?.contains(active);
-            const inChips = !!railEl?.querySelector("[data-chip-row]")?.contains(active);
+            const inChannels = !!railEl?.querySelector("[data-rail-channels]")?.contains(active);
             const body = tag === "BODY" || tag === "HTML";
 
-            if (inRail && !inChips && e.key === "ArrowLeft") {
-                // Fecha o rail sem acordar controles nem o próprio rail:
-                // blur devolve o foco pra body, de onde OK/dir reabre.
+            if (inRail && e.key === "ArrowLeft") {
+                // Coluna de canais → salta pra coluna de categorias; fora da
+                // coluna de canais é a borda esquerda → fecha o rail sem acordar
+                // controles nem o próprio rail: blur devolve o foco pra body,
+                // de onde OK/dir reabre.
                 e.preventDefault();
                 e.stopPropagation();
-                onRailClose?.();
+                if (inChannels && onRailLeft) onRailLeft();
+                else onRailClose?.();
                 return;
             }
 
@@ -123,7 +128,7 @@ const PlayerKeyHandler = ({ mode, onActivity, onRailOpen, onRailClose }: PlayerK
 
         window.addEventListener("keydown", onKeyDown, true);
         return () => window.removeEventListener("keydown", onKeyDown, true);
-    }, [store, mode, onActivity, onRailOpen, onRailClose]);
+    }, [store, mode, onActivity, onRailOpen, onRailLeft, onRailClose]);
 
     return null;
 };

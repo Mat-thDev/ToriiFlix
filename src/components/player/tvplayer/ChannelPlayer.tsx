@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Hotkey } from "@videojs/react";
 import { Tv, TvMinimalPlay } from "lucide-react";
 import { SpatialNavigation } from "@noriginmedia/norigin-spatial-navigation-core";
@@ -52,9 +52,25 @@ const ChannelPlayer = ({
         if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     }, [hide]);
 
-    const availableGenres = Array.from(
-        new Set(channels.flatMap((c) => c.genres || []))
-    ).filter(Boolean);
+    const availableGenres = useMemo(
+        () => Array.from(new Set(channels.flatMap((c) => c.genres || []))).filter(Boolean),
+        [channels],
+    );
+
+    // Esquerda na coluna de canais → foca a categoria atual na coluna de categorias.
+    const openCategories = useCallback(() => {
+        poke();
+        const wanted =
+            selectedGenre && availableGenres.includes(selectedGenre)
+                ? `GENRE_${selectedGenre}`
+                : "GENRE_ALL";
+        requestAnimationFrame(() => {
+            const target = [wanted, "GENRE_ALL"].find((key) =>
+                SpatialNavigation.doesFocusableExist(key),
+            );
+            if (target) SpatialNavigation.setFocus(target);
+        });
+    }, [poke, selectedGenre, availableGenres]);
 
     return (
         <PlayerSurface
@@ -65,7 +81,12 @@ const ChannelPlayer = ({
         >
             <Hotkey keys="m" action="toggleMuted" />
             <Hotkey keys="Space" action="togglePaused" />
-            <PlayerKeyHandler mode="channels" onRailOpen={openRail} onRailClose={closeRail} />
+            <PlayerKeyHandler
+                mode="channels"
+                onRailOpen={openRail}
+                onRailLeft={availableGenres.length > 0 ? openCategories : undefined}
+                onRailClose={closeRail}
+            />
 
             <ChannelRail
                 channels={channels}

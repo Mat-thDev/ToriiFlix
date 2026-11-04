@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 import { Filter, Tv } from "lucide-react";
-import { FocusButton } from "../../ui/FocusButton";
+import ChannelCategory from "./ChannelCategory";
 import ChannelRow from "./ChannelRow";
 
 const INITIAL_COUNT = 30;
@@ -27,11 +27,27 @@ const ChannelRail = ({
     const listRef = useRef<HTMLOListElement>(null);
     const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
 
+    // Filtro local por gênero caso o addon traga os itens e queiramos refinar instantaneamente
+    const filteredChannels = useMemo(
+        () => (selectedGenre ? channels.filter((c) => c.genres?.includes(selectedGenre)) : channels),
+        [channels, selectedGenre],
+    );
+
+    // Contagem por categoria — coluna de categorias com números ao vivo
+    const counts = useMemo(() => {
+        const map = new Map<string, number>();
+        for (const channel of channels)
+            for (const genre of channel.genres ?? []) map.set(genre, (map.get(genre) ?? 0) + 1);
+        return map;
+    }, [channels]);
+
     useEffect(() => {
         setVisibleCount(INITIAL_COUNT);
     }, [channels, selectedGenre]);
 
-    const selectedIndex = selectedId ? channels.findIndex((channel) => channel.id === selectedId) : -1;
+    const selectedIndex = selectedId
+        ? filteredChannels.findIndex((channel) => channel.id === selectedId)
+        : -1;
     useEffect(() => {
         if (selectedIndex >= visibleCount) setVisibleCount(selectedIndex + 1);
     }, [selectedIndex, visibleCount]);
@@ -39,23 +55,22 @@ const ChannelRail = ({
     useEffect(() => {
         if (!visible) return;
         listRef.current?.querySelector<HTMLElement>("[data-playing]")?.scrollIntoView({ block: "center" });
-    }, [visible, selectedId]);
+    }, [visible, selectedId, selectedGenre]);
 
     const onScroll = useCallback(
         (event: React.UIEvent<HTMLOListElement>) => {
             const list = event.currentTarget;
             if (list.scrollTop + list.clientHeight < list.scrollHeight - LOAD_MORE_PX) return;
-            setVisibleCount((count) => Math.min(count + STEP, channels.length));
+            setVisibleCount((count) => Math.min(count + STEP, filteredChannels.length));
         },
-        [channels.length],
+        [filteredChannels.length],
     );
 
-    // Filtro local por gênero caso o addon traga os itens e queiramos refinar instantaneamente
-    const filteredChannels = selectedGenre
-        ? channels.filter((c) => c.genres?.includes(selectedGenre))
-        : channels;
+    const shown = filteredChannels.length > visibleCount
+        ? filteredChannels.slice(0, visibleCount)
+        : filteredChannels;
 
-    const shown = filteredChannels.length > visibleCount ? filteredChannels.slice(0, visibleCount) : filteredChannels;
+    const hasCategories = availableGenres.length > 0 && !!onSelectGenre;
 
     return (
         <nav
@@ -66,25 +81,19 @@ const ChannelRail = ({
             // mover o mouse sobre o vídeo NÃO abre mais o rail (não bloqueia os controles).
             onPointerMove={() => onActivity?.()}
             className={clsx(
-                // Painel largo com limites: ocupa a tela de forma proporcional
-                // sem cobrir o vídeo todo em resoluções grandes.
+                // Painel largo com limites: duas colunas (categorias + canais) sem
+                // cobrir o vídeo todo em resoluções grandes.
                 "absolute inset-y-0 left-0 z-5 flex flex-col",
-                "w-[44%] max-w-180 min-w-[340px]",
+                "w-[58%] max-w-[1120px] min-w-[460px]",
                 "bg-black/90",
                 "pointer-events-none -translate-x-4 opacity-0 transition-[opacity,translate] duration-300",
                 "data-visible:pointer-events-auto data-visible:translate-x-0 data-visible:opacity-100",
-                "p-5 pr-4",
+                "p-4 pr-3",
             )}
         >
-            {/* Cabeçalho — título + contagem (+ addon quando existir) */}
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
-                <div className="min-w-0">
-                    <h2 className="truncate text-lg font-bold leading-tight text-white">Canais</h2>
-                    <p className="text-[11px] font-medium text-white/50">
-                        {filteredChannels.length} {filteredChannels.length === 1 ? "canal" : "canais"}
-                        {selectedGenre ? ` · ${selectedGenre}` : ""}
-                    </p>
-                </div>
+            {/* Cabeçalho — título + addon quando existir */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-2.5">
+                <h2 className="min-w-0 truncate text-lg font-bold leading-tight text-white">Canais</h2>
                 {addons.length > 0 && onSelectAddon && (
                     <select
                         aria-label="Addon / Fonte"
@@ -101,99 +110,87 @@ const ChannelRail = ({
                 )}
             </div>
 
-            {/* Categorias — chips focáveis pelo remote: Esq/Dir trocam de
-                categoria (linha detectada pelo PlayerKeyHandler como "chip row",
-                então a esquerda aqui navega em vez de fechar o rail) */}
-            {availableGenres.length > 0 && onSelectGenre && (
-                <div data-chip-row className="border-b border-white/10 py-3">
-                    <span className="mb-2 flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-white/50 uppercase">
-                        <Filter className="size-3" /> Categorias
-                    </span>
-                    <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5">
-                        <FocusButton
-                            type="button"
-                            focusKey="GENRE_ALL"
-                            aria-pressed={!selectedGenre}
-                            onFocus={() => onActivity?.()}
-                            onClick={() => {
-                                onActivity?.();
-                                onSelectGenre(undefined);
-                            }}
-                            className={clsx(
-                                "max-w-full shrink-0 truncate rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
-                                !selectedGenre
-                                    ? "bg-primary text-primary-content"
-                                    : "bg-white/10 text-white/70 hover:bg-white/15",
-                            )}
-                        >
-                            Todas
-                        </FocusButton>
-                        {availableGenres.map((genre) => (
-                            <FocusButton
-                                key={genre}
-                                type="button"
-                                focusKey={`GENRE_${genre}`}
-                                aria-pressed={selectedGenre === genre}
-                                onFocus={() => onActivity?.()}
-                                onClick={() => {
-                                    onActivity?.();
-                                    onSelectGenre(genre);
-                                }}
-                                className={clsx(
-                                    "max-w-full shrink-0 truncate rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
-                                    selectedGenre === genre
-                                        ? "bg-primary text-primary-content"
-                                        : "bg-white/10 text-white/70 hover:bg-white/15",
-                                )}
-                            >
-                                {genre}
-                            </FocusButton>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Lista de Canais */}
-            <ol
-                ref={listRef}
-                onScroll={onScroll}
-                aria-busy={loading || undefined}
-                className="flex-1 space-y-2.5 overflow-y-auto pr-1 pt-3"
-            >
-                {loading && channels.length === 0 &&
-                    Array.from({ length: SKELETON_COUNT }, (_, i) => (
-                        <li
-                            key={`skeleton-${i}`}
-                            aria-hidden="true"
-                            className="flex items-center gap-3 rounded-xl bg-white/5 p-2 ring-1 ring-white/10"
-                        >
-                            <div className="size-14 shrink-0 animate-pulse rounded-lg bg-white/10" />
-                            <div className="min-w-0 flex-1 space-y-2">
-                                <div className="h-3 w-3/4 animate-pulse rounded bg-white/10" />
-                                <div className="h-2 w-1/2 animate-pulse rounded bg-white/10" />
-                            </div>
-                        </li>
-                    ))}
-
-                {!loading && filteredChannels.length === 0 && (
-                    <li className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-white/20 px-4 py-10 text-center">
-                        <Tv className="size-8 text-white/30" aria-hidden="true" />
-                        <p className="text-sm font-semibold text-white/80">Nenhum canal encontrado</p>
-                        <p className="text-xs text-white/50">Tente selecionar outra categoria ou addon.</p>
-                    </li>
+            <div className="flex min-h-0 flex-1 gap-3 pt-3">
+                {/* Coluna de categorias — vertical; quando está focada, a esquerda fecha o rail */}
+                {hasCategories && (
+                    <aside data-rail-categories className="flex w-44 shrink-0 flex-col">
+                        <span className="mb-1.5 flex items-center gap-1.5 px-1 text-[10px] font-bold tracking-wider text-white/45 uppercase">
+                            <Filter className="size-3" aria-hidden="true" /> Categorias
+                        </span>
+                        <ol aria-label="Categorias" className="min-h-0 flex-1 space-y-0.5 overflow-y-auto pr-1">
+                            <ChannelCategory
+                                all
+                                label="Todas"
+                                count={channels.length}
+                                selected={!selectedGenre}
+                                focusKey="GENRE_ALL"
+                                onSelect={() => onSelectGenre?.(undefined)}
+                                onActivity={onActivity}
+                            />
+                            {availableGenres.map((genre) => (
+                                <ChannelCategory
+                                    key={genre}
+                                    label={genre}
+                                    count={counts.get(genre) ?? 0}
+                                    selected={selectedGenre === genre}
+                                    focusKey={`GENRE_${genre}`}
+                                    onSelect={() => onSelectGenre?.(genre)}
+                                    onActivity={onActivity}
+                                />
+                            ))}
+                        </ol>
+                    </aside>
                 )}
 
-                {shown.map((channel, index) => (
-                    <ChannelRow
-                        key={channel.id}
-                        channel={channel}
-                        index={index}
-                        playing={channel.id === selectedId}
-                        onSelect={onSelect}
-                        onActivity={onActivity}
-                    />
-                ))}
-            </ol>
+                {/* Lista de canais */}
+                <section data-rail-channels className="flex min-w-0 flex-1 flex-col">
+                    <span className="mb-1.5 truncate px-1 text-[10px] font-bold tracking-wider text-white/45 uppercase">
+                        {filteredChannels.length} {filteredChannels.length === 1 ? "canal" : "canais"}
+                        {selectedGenre ? ` · ${selectedGenre}` : ""}
+                    </span>
+                    <ol
+                        ref={listRef}
+                        onScroll={onScroll}
+                        aria-busy={loading || undefined}
+                        aria-label="Lista de canais"
+                        className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1"
+                    >
+                        {loading && channels.length === 0 &&
+                            Array.from({ length: SKELETON_COUNT }, (_, i) => (
+                                <li
+                                    key={`skeleton-${i}`}
+                                    aria-hidden="true"
+                                    className="flex items-center gap-3 rounded-xl bg-white/5 p-2 ring-1 ring-white/10"
+                                >
+                                    <div className="size-14 shrink-0 animate-pulse rounded-lg bg-white/10" />
+                                    <div className="min-w-0 flex-1 space-y-2">
+                                        <div className="h-3 w-3/4 animate-pulse rounded bg-white/10" />
+                                        <div className="h-2 w-1/2 animate-pulse rounded bg-white/10" />
+                                    </div>
+                                </li>
+                            ))}
+
+                        {!loading && filteredChannels.length === 0 && (
+                            <li className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-white/20 px-4 py-10 text-center">
+                                <Tv className="size-8 text-white/30" aria-hidden="true" />
+                                <p className="text-sm font-semibold text-white/80">Nenhum canal encontrado</p>
+                                <p className="text-xs text-white/50">Tente selecionar outra categoria ou addon.</p>
+                            </li>
+                        )}
+
+                        {shown.map((channel, index) => (
+                            <ChannelRow
+                                key={channel.id}
+                                channel={channel}
+                                index={index}
+                                playing={channel.id === selectedId}
+                                onSelect={onSelect}
+                                onActivity={onActivity}
+                            />
+                        ))}
+                    </ol>
+                </section>
+            </div>
         </nav>
     );
 };
