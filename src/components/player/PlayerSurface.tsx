@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
-import { BufferingIndicator, Container, ErrorDialog, StatusAnnouncer } from "@videojs/react";
+import { BufferingIndicator, Container, ErrorDialog, StatusAnnouncer, resolveAdapterType } from "@videojs/react";
 import { Video, VideoPlayer } from "@videojs/react/video";
+import { HlsJsVideo } from "@videojs/react/media/hlsjs-video";
 import clsx from "clsx";
 import SubtitleOverlay from "./SubtitleOverlay";
 
@@ -8,6 +9,8 @@ import SubtitleOverlay from "./SubtitleOverlay";
 const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, className, children }: Player.PlayerSurfaceProps) => {
 
     const [isPlaying, setIsPlaying] = useState(false);
+
+    const isHls = !!src && resolveAdapterType(src) === "hls";
 
     return (
         <VideoPlayer>
@@ -28,23 +31,43 @@ const PlayerSurface = ({ src, backgroundImage, autoPlay, muted, subtitles, class
                 )}
 
                 <Suspense fallback={null}>
-                    <Video
-                        src={src}
-                        autoPlay={autoPlay}
-                        muted={muted}
-                        playsInline
-                        onPlay={() => setIsPlaying(true)}
-                    >
-                        {subtitles && subtitles.map((sub, index) => (
-                            <track
-                                key={sub.id || index}
-                                kind="captions"
-                                src={sub.url}
-                                srcLang={sub.lang}
-                                label={sub.name}
-                            />
-                        ))}
-                    </Video>
+                    {isHls ? (
+                        <HlsJsVideo
+                            src={src}
+                            autoPlay={autoPlay}
+                            muted={muted}
+                            playsInline
+                            onPlay={() => setIsPlaying(true)}
+                        >
+                            {subtitles && subtitles.map((sub, index) => (
+                                <track
+                                    key={sub.id || index}
+                                    kind="captions"
+                                    src={sub.url}
+                                    srcLang={sub.lang}
+                                    label={sub.name}
+                                />
+                            ))}
+                        </HlsJsVideo>
+                    ) : (
+                        <Video
+                            src={src}
+                            autoPlay={autoPlay}
+                            muted={muted}
+                            playsInline
+                            onPlay={() => setIsPlaying(true)}
+                        >
+                            {subtitles && subtitles.map((sub, index) => (
+                                <track
+                                    key={sub.id || index}
+                                    kind="captions"
+                                    src={sub.url}
+                                    srcLang={sub.lang}
+                                    label={sub.name}
+                                />
+                            ))}
+                        </Video>
+                    )}
                 </Suspense>
 
                 <div

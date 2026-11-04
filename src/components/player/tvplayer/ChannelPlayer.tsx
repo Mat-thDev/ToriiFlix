@@ -34,24 +34,19 @@ const ChannelPlayer = ({
     const { stream, unavailable, retry } = useChannelStream(activeId, activeKind);
     const { settings } = useSettings();
 
-    // OK/dir com foco em body → abre o rail e foca no canal que já está no ar.
-    // O foco passa pelo norigin (setFocus com a focusKey estável do card) —
-    // .focus() nativo não atualiza o estado dele e as setas morreriam no rail.
     const openRail = useCallback(() => {
         poke();
         requestAnimationFrame(() => {
             const keys = [
                 activeId && `CHANNEL_${activeId}`,
                 channels[0] && `CHANNEL_${channels[0].id}`,
-                "GENRE_ALL", // fallback: chip "Todas" (presente quando há categorias)
+                "GENRE_ALL",
             ];
             const target = keys.find((key) => key && SpatialNavigation.doesFocusableExist(key));
             if (target) SpatialNavigation.setFocus(target);
         });
     }, [poke, activeId, channels]);
 
-    // Esq dentro da lista → fecha o rail: blur devolve o foco pra body,
-    // de onde OK/dir reabre. hide() já cancela o timer do autohide.
     const closeRail = useCallback(() => {
         hide();
         if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -87,9 +82,6 @@ const ChannelPlayer = ({
                 availableGenres={availableGenres}
             />
 
-            {/* Barra de controles (estilo player de filmes) — play + volume à
-                esquerda, indicador "Ao vivo" à direita. Autohide do videojs;
-                no TV os botões não recebem foco, as setas do body cuidam disso. */}
             <PlayerControls>
                 <PlayerRow top>
                     <div
@@ -100,8 +92,6 @@ const ChannelPlayer = ({
                             {activeChannel?.name ?? "Canal"}
                         </span>
                     </div>
-                    {/* Abre/fecha o rail — affordance pro mouse; no remote o
-                        OK/Dir abre e a Esq dentro da lista fecha */}
                     <button
                         type="button"
                         onClick={() => (visible ? closeRail() : openRail())}

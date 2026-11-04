@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
+    "@videojs/hlsjs-video": "^10.2.0",
     "@videojs/react": "^10.2.0",
     "@vidstack/react": "^1.15.7",
     "clsx": "^2.1.1",

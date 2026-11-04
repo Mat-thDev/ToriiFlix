@@ -69,7 +69,7 @@ const ChannelRail = ({
                 // Painel largo com limites: ocupa a tela de forma proporcional
                 // sem cobrir o vídeo todo em resoluções grandes.
                 "absolute inset-y-0 left-0 z-5 flex flex-col",
-                "w-[44%] max-w-[720px] min-w-[340px]",
+                "w-[44%] max-w-180 min-w-[340px]",
                 "bg-black/90",
                 "pointer-events-none -translate-x-4 opacity-0 transition-[opacity,translate] duration-300",
                 "data-visible:pointer-events-auto data-visible:translate-x-0 data-visible:opacity-100",
