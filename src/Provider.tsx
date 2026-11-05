@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useFocusable, FocusContext } from "@noriginmedia/norigin-spatial-navigation-react";
-import { init } from "@noriginmedia/norigin-spatial-navigation-core";
+import { init, setKeyMap } from "@noriginmedia/norigin-spatial-navigation-core";
 import { MotionConfig } from "framer-motion";
 import useAppearance from "./hooks/useAppearance";
 import { applyPlatformClass } from "./platform";
 import useBackNavigation from "./hooks/useBackNavigation";
 import useEditableFocus from "./hooks/useEditableFocus";
+import useFocusRecovery from "./hooks/useFocusRecovery";
 import useDeepLink from "./hooks/useDeepLink";
 import { ToastContainer } from "react-toastify";
 import ModalProvider from "./components/modals";
@@ -17,6 +18,17 @@ init({
   useGetBoundingClientRect: true,
   // Limia a repetição da seta segurada no remote (~14 nav/s, resposta imediata)
   throttle: 70,
+});
+
+// Aliases de tecla do remote webOS: alguns modelos mandam "Left"/"Up" (ou "OK")
+// no lugar de ArrowLeft/Enter — sem isso o norigin ignora a seta e a navegação
+// morre. O setKeyMap do core faz merge no mapa default.
+setKeyMap({
+  left: [37, "ArrowLeft", "Left"],
+  up: [38, "ArrowUp", "Up"],
+  right: [39, "ArrowRight", "Right"],
+  down: [40, "ArrowDown", "Down"],
+  enter: [13, "Enter", "OK"],
 });
 
 const Provider = ({ children }: UI.ProviderProps) => {
@@ -44,6 +56,7 @@ const Provider = ({ children }: UI.ProviderProps) => {
 
   useBackNavigation();
   useEditableFocus();
+  useFocusRecovery();
   useDeepLink();
 
   return (

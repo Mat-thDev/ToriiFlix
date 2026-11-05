@@ -123,6 +123,7 @@ const ChannelRail = ({
                                 label="Todas"
                                 count={channels.length}
                                 selected={!selectedGenre}
+                                focusable={visible}
                                 focusKey="GENRE_ALL"
                                 onSelect={() => onSelectGenre?.(undefined)}
                                 onActivity={onActivity}
@@ -133,6 +134,7 @@ const ChannelRail = ({
                                     label={genre}
                                     count={counts.get(genre) ?? 0}
                                     selected={selectedGenre === genre}
+                                    focusable={visible}
                                     focusKey={`GENRE_${genre}`}
                                     onSelect={() => onSelectGenre?.(genre)}
                                     onActivity={onActivity}
@@ -184,6 +186,7 @@ const ChannelRail = ({
                                 channel={channel}
                                 index={index}
                                 playing={channel.id === selectedId}
+                                focusable={visible}
                                 onSelect={onSelect}
                                 onActivity={onActivity}
                             />

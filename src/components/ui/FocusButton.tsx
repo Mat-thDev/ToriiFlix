@@ -14,12 +14,14 @@ export const FocusButton = ({
   onFocus,
   buttonRef,
   focusKey,
+  focusable,
   onArrowPress,
   ...rest
 }: UI.FocusButtonProps) => {
   const animations = useAnimations();
   const { ref, focused, focusSelf } = useFocusable<HTMLButtonElement>({
     focusKey,
+    focusable,
     onEnterPress: () => ref.current?.click(),
     onArrowPress: (direction) => onArrowPress?.(direction) ?? true,
     onFocus: ({ node }) =>

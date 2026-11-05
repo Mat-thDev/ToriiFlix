@@ -21,11 +21,20 @@ export const isTypingTarget = (target: EventTarget | null): boolean => {
 
 /** Sai do campo de texto: Esc ou tecla 461 do remote webOS. */
 export const isExitTypingEvent = (e: KeyboardEvent): boolean =>
-  e.key === "Escape" || e.keyCode === WEBOS_KEY_BACK;
+  e.key === "Escape" ||
+  e.key === "GoBack" ||
+  e.key === "BrowserBack" ||
+  e.keyCode === WEBOS_KEY_BACK;
 
 /** Evento de "voltar" do remote webOS, Escape ou Backspace (fora de editáveis). */
 export const isBackEvent = (e: KeyboardEvent): boolean => {
-  const isBack = e.key === "Escape" || e.key === "Backspace" || e.keyCode === WEBOS_KEY_BACK;
+  const isBack =
+    e.key === "Escape" ||
+    e.key === "Backspace" ||
+    // Variantes de tecla do remote webOS (alguns modelos não mandam keyCode 461)
+    e.key === "GoBack" ||
+    e.key === "BrowserBack" ||
+    e.keyCode === WEBOS_KEY_BACK;
 
   // Editável segura o Backspace (apagar texto)
   return isBack && !isEditableTarget(e.target);

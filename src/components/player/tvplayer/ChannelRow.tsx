@@ -26,6 +26,7 @@ const ChannelRow = memo(function ChannelRow({
     channel,
     index,
     playing,
+    focusable,
     onSelect,
     onActivity,
 }: UI.ChannelRowProps) {
@@ -39,6 +40,7 @@ const ChannelRow = memo(function ChannelRow({
                 // Chave estável: o ChannelPlayer usa SpatialNavigation.setFocus
                 // nela pra abrir o rail já no canal em exibição.
                 focusKey={`CHANNEL_${channel.id}`}
+                focusable={focusable}
                 title={channel.name}
                 aria-label={`Canal ${index + 1}: ${channel.name}`}
                 aria-current={playing || undefined}

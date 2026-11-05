@@ -39,6 +39,8 @@ declare namespace UI {
     buttonRef?: React.RefObject<HTMLButtonElement | null>;
     /** Chave estável do norigin (para outro componente setFocus direcionado). */
     focusKey?: string;
+    /** false: registrado mas fora da navegação (ex.: rail oculto). */
+    focusable?: boolean;
     /** Intercepta setas do remote; retornar `false` cancela a navegação geométrica default. */
     onArrowPress?: (direction: string) => boolean | void;
   }
@@ -244,6 +246,8 @@ declare namespace UI {
     channel: Media.Item;
     index: number;
     playing: boolean;
+    /** false enquanto o rail está oculto (fora da navegação do remote). */
+    focusable?: boolean;
     onSelect: (channel: Media.Item) => void;
     onActivity?: () => void;
   };

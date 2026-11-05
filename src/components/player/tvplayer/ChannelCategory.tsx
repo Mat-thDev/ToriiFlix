@@ -16,6 +16,8 @@ interface ChannelCategoryProps {
     selected: boolean;
     /** "Todas" usa ícone em vez da inicial do rótulo. */
     all?: boolean;
+    /** false enquanto o rail está oculto (fora da navegação do remote). */
+    focusable?: boolean;
     focusKey: string;
     onSelect: () => void;
     onActivity?: () => void;
@@ -26,6 +28,7 @@ const ChannelCategory = memo(function ChannelCategory({
     count,
     selected,
     all = false,
+    focusable,
     focusKey,
     onSelect,
     onActivity,
@@ -37,6 +40,7 @@ const ChannelCategory = memo(function ChannelCategory({
             <FocusButton
                 type="button"
                 focusKey={focusKey}
+                focusable={focusable}
                 aria-pressed={selected}
                 aria-label={all ? `Todas as categorias, ${count} canais` : `${label}, ${count} canais`}
                 onFocus={() => onActivity?.()}
